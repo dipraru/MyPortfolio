@@ -1,0 +1,50 @@
+# Visual Studio and ASP.NET specific
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.cache
+Thumbs.db
+*.tmp
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# NuGet
+packages/
+*.nupkg
+*.snupkg
+.nuget/
+
+# MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# Visual Studio 2015/2017 cache/options directory
+.vs/
+
+# Visual Studio Code cache/options directory
+.vscode/
+
+# ReSharper cache
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Web publish
+publish/
+
+# Temporary files
+*.log
+*.tmp
+*.temp
