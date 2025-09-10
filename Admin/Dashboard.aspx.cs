@@ -342,6 +342,101 @@ namespace MyPortfolio.Admin
         }
 
         [System.Web.Services.WebMethod]
+        public static string UpdateSkill(int id, string name, string description, string category, int proficiencyLevel, 
+                                        decimal yearsOfExperience, string iconClass, string iconColor)
+        {
+            try
+            {
+                var skill = SkillsHelper.GetSkillById(id);
+                if (skill == null)
+                {
+                    return "{\"success\": false, \"message\": \"Skill not found.\"}";
+                }
+
+                skill.Name = name;
+                skill.Description = description;
+                skill.Category = category;
+                skill.ProficiencyPercentage = proficiencyLevel;
+                skill.YearsOfExperience = yearsOfExperience > 0 ? yearsOfExperience : (decimal?)null;
+                skill.IconClass = iconClass;
+                skill.IconColor = iconColor;
+
+                bool success = SkillsHelper.UpdateSkill(skill);
+                if (success)
+                {
+                    return "{\"success\": true, \"message\": \"Skill updated successfully!\"}";
+                }
+                else
+                {
+                    return "{\"success\": false, \"message\": \"Failed to update skill.\"}";
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"{{\"success\": false, \"message\": \"Error updating skill: {EscapeJsonString(ex.Message)}\"}}";
+            }
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string DeleteSkill(int id)
+        {
+            try
+            {
+                bool success = SkillsHelper.DeleteSkill(id);
+                if (success)
+                {
+                    return "{\"success\": true, \"message\": \"Skill deleted successfully!\"}";
+                }
+                else
+                {
+                    return "{\"success\": false, \"message\": \"Failed to delete skill.\"}";
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"{{\"success\": false, \"message\": \"Error deleting skill: {EscapeJsonString(ex.Message)}\"}}";
+            }
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string GetSkill(int id)
+        {
+            try
+            {
+                var skill = SkillsHelper.GetSkillById(id);
+                if (skill == null)
+                {
+                    return "{\"success\": false, \"message\": \"Skill not found.\"}";
+                }
+
+                // Escape quotes in strings to prevent JSON parsing errors
+                string name = EscapeJsonString(skill.Name);
+                string description = EscapeJsonString(skill.Description ?? "");
+                string category = EscapeJsonString(skill.Category);
+                string iconClass = EscapeJsonString(skill.IconClass ?? "");
+                string iconColor = EscapeJsonString(skill.IconColor ?? "");
+
+                return $@"{{
+                    ""success"": true,
+                    ""skill"": {{
+                        ""id"": {skill.Id},
+                        ""name"": ""{name}"",
+                        ""description"": ""{description}"",
+                        ""category"": ""{category}"",
+                        ""proficiencyLevel"": {skill.ProficiencyPercentage},
+                        ""yearsOfExperience"": {(skill.YearsOfExperience?.ToString() ?? "0")},
+                        ""iconClass"": ""{iconClass}"",
+                        ""iconColor"": ""{iconColor}""
+                    }}
+                }}";
+            }
+            catch (Exception ex)
+            {
+                return $"{{\"success\": false, \"message\": \"Error getting skill: {EscapeJsonString(ex.Message)}\"}}";
+            }
+        }
+
+        [System.Web.Services.WebMethod]
         public static string GetAllSkillsData()
         {
             try
@@ -456,6 +551,108 @@ namespace MyPortfolio.Admin
         }
 
         [System.Web.Services.WebMethod]
+        public static string UpdateAchievement(int id, string title, string description, string category, string organization, 
+                                             string dateAchieved, string certificateUrl, string badgeUrl)
+        {
+            try
+            {
+                var achievement = AchievementsHelper.GetAchievementById(id);
+                if (achievement == null)
+                {
+                    return "{\"success\": false, \"message\": \"Achievement not found.\"}";
+                }
+
+                DateTime achievedDate;
+                if (!DateTime.TryParse(dateAchieved, out achievedDate))
+                {
+                    return "{\"success\": false, \"message\": \"Invalid date format.\"}";
+                }
+
+                achievement.Title = title;
+                achievement.Description = description;
+                achievement.Category = category;
+                achievement.Organization = organization;
+                achievement.DateAchieved = achievedDate;
+                achievement.CertificateUrl = certificateUrl;
+                achievement.BadgeUrl = badgeUrl;
+
+                bool success = AchievementsHelper.UpdateAchievement(achievement);
+                if (success)
+                {
+                    return "{\"success\": true, \"message\": \"Achievement updated successfully!\"}";
+                }
+                else
+                {
+                    return "{\"success\": false, \"message\": \"Failed to update achievement.\"}";
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"{{\"success\": false, \"message\": \"Error updating achievement: {EscapeJsonString(ex.Message)}\"}}";
+            }
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string DeleteAchievement(int id)
+        {
+            try
+            {
+                bool success = AchievementsHelper.DeleteAchievement(id);
+                if (success)
+                {
+                    return "{\"success\": true, \"message\": \"Achievement deleted successfully!\"}";
+                }
+                else
+                {
+                    return "{\"success\": false, \"message\": \"Failed to delete achievement.\"}";
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"{{\"success\": false, \"message\": \"Error deleting achievement: {EscapeJsonString(ex.Message)}\"}}";
+            }
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string GetAchievement(int id)
+        {
+            try
+            {
+                var achievement = AchievementsHelper.GetAchievementById(id);
+                if (achievement == null)
+                {
+                    return "{\"success\": false, \"message\": \"Achievement not found.\"}";
+                }
+
+                // Escape quotes in strings to prevent JSON parsing errors
+                string title = EscapeJsonString(achievement.Title);
+                string description = EscapeJsonString(achievement.Description);
+                string category = EscapeJsonString(achievement.Category);
+                string organization = EscapeJsonString(achievement.Organization ?? "");
+                string certificateUrl = EscapeJsonString(achievement.CertificateUrl ?? "");
+                string badgeUrl = EscapeJsonString(achievement.BadgeUrl ?? "");
+
+                return $@"{{
+                    ""success"": true,
+                    ""achievement"": {{
+                        ""id"": {achievement.Id},
+                        ""title"": ""{title}"",
+                        ""description"": ""{description}"",
+                        ""category"": ""{category}"",
+                        ""organization"": ""{organization}"",
+                        ""dateAchieved"": ""{achievement.DateAchieved:yyyy-MM-dd}"",
+                        ""certificateUrl"": ""{certificateUrl}"",
+                        ""badgeUrl"": ""{badgeUrl}""
+                    }}
+                }}";
+            }
+            catch (Exception ex)
+            {
+                return $"{{\"success\": false, \"message\": \"Error getting achievement: {EscapeJsonString(ex.Message)}\"}}";
+            }
+        }
+
+        [System.Web.Services.WebMethod]
         public static string GetAllAchievementsData()
         {
             try
@@ -524,6 +721,295 @@ namespace MyPortfolio.Admin
             catch (Exception ex)
             {
                 return $"{{\"success\": false, \"message\": \"Error loading achievements: {EscapeJsonString(ex.Message)}\"}}";
+            }
+        }
+
+        // AJAX Methods for Messages operations
+        [System.Web.Services.WebMethod]
+        public static string TestMessagesConnection()
+        {
+            try
+            {
+                // Test the messages helper connection
+                var messages = MessagesHelper.GetAllMessages();
+                return "{\"success\": true, \"message\": \"Messages database connection successful!\"}";
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = ex.Message;
+                
+                // Check if it's a table not found error
+                if (errorMessage.Contains("Invalid object name 'Messages'") || 
+                    errorMessage.Contains("Table 'Messages' doesn't exist"))
+                {
+                    return "{\"success\": false, \"message\": \"Messages table not found. Please create the Messages table first using the setup script.\"}";
+                }
+                
+                return $"{{\"success\": false, \"message\": \"Database connection error: {EscapeJsonString(errorMessage)}\"}}";
+            }
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string GetAllMessagesData()
+        {
+            try
+            {
+                var messages = MessagesHelper.GetAllMessages();
+                
+                string messagesHtml = "";
+                foreach (var message in messages)
+                {
+                    string encodedName = System.Web.HttpUtility.HtmlEncode(message.Name);
+                    string encodedEmail = System.Web.HttpUtility.HtmlEncode(message.Email);
+                    string encodedSubject = System.Web.HttpUtility.HtmlEncode(message.Subject);
+                    string encodedMessage = System.Web.HttpUtility.HtmlEncode(message.MessageText);
+                    
+                    // Truncate message for display
+                    string truncatedMessage = encodedMessage.Length > 100 
+                        ? encodedMessage.Substring(0, 100) + "..." 
+                        : encodedMessage;
+
+                    // Format date
+                    string formattedDate = message.DateReceived.ToString("MMM dd, yyyy HH:mm");
+                    
+                    // Status display
+                    string statusClass = message.IsRead ? "status-read" : "status-unread";
+                    string statusIcon = message.IsRead ? "fas fa-envelope-open" : "fas fa-envelope";
+                    string statusText = message.IsRead ? "Read" : "Unread";
+                    
+                    // Priority display
+                    string priorityClass = "";
+                    switch (message.Priority?.ToLower())
+                    {
+                        case "high":
+                            priorityClass = "priority-high";
+                            break;
+                        case "low":
+                            priorityClass = "priority-low";
+                            break;
+                        default:
+                            priorityClass = "priority-normal";
+                            break;
+                    }
+
+                    messagesHtml += $@"
+                        <tr data-message-id='{message.Id}' class='{(message.IsRead ? "message-read" : "message-unread")}'>
+                            <td>
+                                <div class='message-sender'>
+                                    <div class='sender-name'>{encodedName}</div>
+                                    <div class='sender-email'>{encodedEmail}</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class='message-subject {priorityClass}'>
+                                    {encodedSubject}
+                                    {(message.Priority?.ToLower() == "high" ? "<span class='priority-indicator'>!</span>" : "")}
+                                </div>
+                            </td>
+                            <td>
+                                <div class='message-preview' title='{encodedMessage}'>
+                                    {truncatedMessage}
+                                </div>
+                            </td>
+                            <td>
+                                <span class='message-status {statusClass}'>
+                                    <i class='{statusIcon}'></i>
+                                    {statusText}
+                                </span>
+                            </td>
+                            <td>
+                                <div class='message-date'>{formattedDate}</div>
+                            </td>
+                            <td>
+                                <div class='actions'>
+                                    <button class='action-btn view-message' title='View Message' data-id='{message.Id}'>
+                                        <i class='fas fa-eye'></i>
+                                    </button>
+                                    {(!message.IsRead ? $"<button class='action-btn mark-read' title='Mark as Read' data-id='{message.Id}'><i class='fas fa-check'></i></button>" : "")}
+                                    <button class='action-btn reply-message' title='Reply' data-id='{message.Id}'>
+                                        <i class='fas fa-reply'></i>
+                                    </button>
+                                    <button class='action-btn delete' title='Delete' data-id='{message.Id}'>
+                                        <i class='fas fa-trash'></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>";
+                }
+
+                if (!messages.Any())
+                {
+                    messagesHtml = @"
+                        <tr>
+                            <td colspan='6' style='text-align: center; padding: 40px;'>
+                                <i class='fas fa-envelope' style='font-size: 3rem; color: var(--text-tertiary); margin-bottom: 15px;'></i>
+                                <div style='color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 10px;'>No messages found</div>
+                                <div style='color: var(--text-tertiary); font-size: 0.9rem;'>Messages from your contact form will appear here</div>
+                            </td>
+                        </tr>";
+                }
+
+                string escapedHtml = EscapeJsonString(messagesHtml);
+                return $@"{{
+                    ""success"": true,
+                    ""messagesCount"": {messages.Count},
+                    ""messagesHtml"": ""{escapedHtml}""
+                }}";
+            }
+            catch (Exception ex)
+            {
+                return $"{{\"success\": false, \"message\": \"Error loading messages: {EscapeJsonString(ex.Message)}\"}}";
+            }
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string MarkMessageAsRead(int messageId)
+        {
+            try
+            {
+                bool success = MessagesHelper.MarkAsRead(messageId);
+                if (success)
+                {
+                    return "{\"success\": true, \"message\": \"Message marked as read successfully!\"}";
+                }
+                else
+                {
+                    return "{\"success\": false, \"message\": \"Failed to mark message as read.\"}";
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"{{\"success\": false, \"message\": \"Error marking message as read: {EscapeJsonString(ex.Message)}\"}}";
+            }
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string DeleteMessage(int messageId)
+        {
+            try
+            {
+                bool success = MessagesHelper.DeleteMessage(messageId);
+                if (success)
+                {
+                    return "{\"success\": true, \"message\": \"Message deleted successfully!\"}";
+                }
+                else
+                {
+                    return "{\"success\": false, \"message\": \"Failed to delete message.\"}";
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"{{\"success\": false, \"message\": \"Error deleting message: {EscapeJsonString(ex.Message)}\"}}";
+            }
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string GetMessage(int messageId)
+        {
+            try
+            {
+                var message = MessagesHelper.GetMessageById(messageId);
+                if (message == null)
+                {
+                    return "{\"success\": false, \"message\": \"Message not found.\"}";
+                }
+
+                // Escape strings for JSON
+                string name = EscapeJsonString(message.Name);
+                string email = EscapeJsonString(message.Email);
+                string subject = EscapeJsonString(message.Subject);
+                string messageText = EscapeJsonString(message.MessageText);
+                string priority = EscapeJsonString(message.Priority ?? "Normal");
+                string ipAddress = EscapeJsonString(message.IpAddress ?? "");
+                string userAgent = EscapeJsonString(message.UserAgent ?? "");
+                string adminNotes = EscapeJsonString(message.AdminNotes ?? "");
+
+                return $@"{{
+                    ""success"": true,
+                    ""message"": {{
+                        ""id"": {message.Id},
+                        ""name"": ""{name}"",
+                        ""email"": ""{email}"",
+                        ""subject"": ""{subject}"",
+                        ""messageText"": ""{messageText}"",
+                        ""isRead"": {message.IsRead.ToString().ToLower()},
+                        ""isReplied"": {message.IsReplied.ToString().ToLower()},
+                        ""priority"": ""{priority}"",
+                        ""ipAddress"": ""{ipAddress}"",
+                        ""userAgent"": ""{userAgent}"",
+                        ""dateReceived"": ""{message.DateReceived:yyyy-MM-dd HH:mm:ss}"",
+                        ""dateRead"": ""{(message.DateRead?.ToString("yyyy-MM-dd HH:mm:ss") ?? "")}"",
+                        ""dateReplied"": ""{(message.DateReplied?.ToString("yyyy-MM-dd HH:mm:ss") ?? "")}"",
+                        ""adminNotes"": ""{adminNotes}""
+                    }}
+                }}";
+            }
+            catch (Exception ex)
+            {
+                return $"{{\"success\": false, \"message\": \"Error getting message: {EscapeJsonString(ex.Message)}\"}}";
+            }
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string SaveProfileData(int id, string fullName, string title, string email, string phone, 
+                                           string location, string bio, int experience, int codeforcesRating, 
+                                           string codeforcesRank, int codechefRating, string codechefRank, 
+                                           int problemsSolved, string githubUrl, string codeforcesUrl, 
+                                           string linkedinUrl, string twitterUrl, string kaggleUrl)
+        {
+            try
+            {
+                var profile = new Profile
+                {
+                    Id = id,
+                    FullName = fullName,
+                    Title = title,
+                    Email = email,
+                    Phone = phone,
+                    Location = location,
+                    Bio = bio,
+                    Experience = experience,
+                    CodeforcesRating = codeforcesRating,
+                    CodeforcesRank = codeforcesRank,
+                    CodechefRating = codechefRating,
+                    CodechefRank = codechefRank,
+                    ProblemsSolved = problemsSolved,
+                    GitHubUrl = githubUrl,
+                    CodeforcesUrl = codeforcesUrl,
+                    LinkedInUrl = linkedinUrl,
+                    TwitterUrl = twitterUrl,
+                    KaggleUrl = kaggleUrl,
+                    IsActive = true
+                };
+
+                bool success;
+                int profileId = id;
+
+                if (id == 0)
+                {
+                    // Insert new profile
+                    profileId = ProfileHelper.InsertProfileAndGetId(profile);
+                    success = profileId > 0;
+                }
+                else
+                {
+                    // Update existing profile
+                    success = ProfileHelper.UpdateProfile(profile);
+                }
+
+                if (success)
+                {
+                    return $"{{\"success\": true, \"message\": \"Profile saved successfully!\", \"profileId\": {profileId}}}";
+                }
+                else
+                {
+                    return "{\"success\": false, \"message\": \"Failed to save profile.\"}";
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"{{\"success\": false, \"message\": \"Error saving profile: {EscapeJsonString(ex.Message)}\"}}";
             }
         }
 

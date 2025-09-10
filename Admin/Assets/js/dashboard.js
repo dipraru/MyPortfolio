@@ -57,6 +57,9 @@ function initializeDashboard() {
     // Project functionality
     initializeProjectFunctionality();
 
+    // Profile functionality
+    initializeProfileFunctionality();
+
     // Tab functionality for messages
     initializeTabFunctionality();
 
@@ -68,6 +71,13 @@ function initializeDashboard() {
 
     console.log('Dashboard loaded successfully!');
 }
+
+// Initialize Profile Functionality
+function initializeProfileFunctionality() {
+    // Profile functionality is now handled by inline JavaScript in ProfileSection.ascx
+    console.log('Profile functionality will be handled by ProfileSection inline scripts');
+}
+
 
 // Function to check if all required modal elements exist
 function checkModalElements() {
@@ -230,6 +240,11 @@ function initializeNavigation() {
                             showAchievementsPage();
                         }
                         break;
+                    case 'messages':
+                        if (typeof showMessagesPage === 'function') {
+                            showMessagesPage();
+                        }
+                        break;
                 }
             }
 
@@ -287,6 +302,9 @@ function initializeProjectFunctionality() {
     const addProjectBtn = document.getElementById('addProjectBtn');
     const addProjectPageBtn = document.getElementById('addProjectPageBtn');
 
+    // Flag to prevent duplicate submissions
+    let isSubmitting = false;
+
     // Project modal functions
     function openProjectModal(isEdit = false, projectId = null) {
         console.log('Opening modern project modal. Edit:', isEdit, 'Project ID:', projectId);
@@ -297,6 +315,7 @@ function initializeProjectFunctionality() {
         }
         
         currentProjectId = projectId;
+        isSubmitting = false; // Reset submission flag
         
         // Use modern modal classes
         projectModal.classList.add('active');
@@ -437,6 +456,7 @@ function initializeProjectFunctionality() {
             projectModal.classList.remove('active');
             document.body.classList.remove('modal-open');
             currentProjectId = null;
+            isSubmitting = false; // Reset submission flag
             
             // Reset form after animation
             setTimeout(() => {
@@ -448,6 +468,12 @@ function initializeProjectFunctionality() {
     function saveProject() {
         console.log('Saving modern project...');
         
+        // Prevent duplicate submissions
+        if (isSubmitting) {
+            console.log('Already submitting, ignoring duplicate save request');
+            return;
+        }
+        
         const title = document.getElementById('projectTitle')?.value?.trim();
         const description = document.getElementById('projectDescription')?.value?.trim();
         
@@ -455,6 +481,9 @@ function initializeProjectFunctionality() {
         if (!validateProjectForm()) {
             return;
         }
+
+        // Set submission flag to prevent duplicates
+        isSubmitting = true;
 
         const saveBtn = document.getElementById('saveProjectBtn');
         const btnContent = saveBtn?.querySelector('.btn-content');
@@ -553,6 +582,9 @@ function initializeProjectFunctionality() {
         if (saveBtn) saveBtn.disabled = false;
         if (btnContent) btnContent.style.display = 'flex';
         if (btnLoading) btnLoading.style.display = 'none';
+        
+        // Reset submission flag
+        isSubmitting = false;
     }
 
     function addProject(title, description, imageUrl, tags, githubUrl, liveUrl) {
@@ -761,74 +793,150 @@ function initializeProjectFunctionality() {
     window.loadProjectData = loadProjectData;
     window.closeProjectModalHandler = closeProjectModal;
 
-    // Event Listeners for modal - use modern event handling
+    // Event Listeners for modal - use modern event handling with duplicate prevention
     if (addProjectBtn) {
-        addProjectBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            openProjectModal(false);
-        });
+        addProjectBtn.removeEventListener('click', handleAddProject); // Remove existing if any
+        addProjectBtn.addEventListener('click', handleAddProject);
     }
 
     if (addProjectPageBtn) {
-        addProjectPageBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            openProjectModal(false);
-        });
+        addProjectPageBtn.removeEventListener('click', handleAddProject); // Remove existing if any
+        addProjectPageBtn.addEventListener('click', handleAddProject);
+    }
+
+    function handleAddProject(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        openProjectModal(false);
     }
 
     // Add event listener for reorder button
     const reorderProjectsBtn = document.getElementById('reorderProjectsBtn');
     if (reorderProjectsBtn) {
-        reorderProjectsBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            reorderProjects();
-        });
+        reorderProjectsBtn.removeEventListener('click', handleReorderProjects); // Remove existing if any
+        reorderProjectsBtn.addEventListener('click', handleReorderProjects);
     }
 
-    // Modern modal event handling
+    function handleReorderProjects(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        reorderProjects();
+    }
+
+    // Modern modal event handling with duplicate prevention
     if (closeProjectModalBtn) {
-        closeProjectModalBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            closeProjectModal();
-        });
+        closeProjectModalBtn.removeEventListener('click', handleCloseModal); // Remove existing if any
+        closeProjectModalBtn.addEventListener('click', handleCloseModal);
     }
 
     if (cancelProjectBtn) {
-        cancelProjectBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            closeProjectModal();
-        });
+        cancelProjectBtn.removeEventListener('click', handleCloseModal); // Remove existing if any
+        cancelProjectBtn.addEventListener('click', handleCloseModal);
+    }
+
+    function handleCloseModal(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        closeProjectModal();
     }
 
     if (saveProjectBtn) {
-        saveProjectBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            saveProject();
-        });
+        saveProjectBtn.removeEventListener('click', handleSaveProject); // Remove existing if any
+        saveProjectBtn.addEventListener('click', handleSaveProject);
+    }
+
+    function handleSaveProject(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        saveProject();
     }
 
     // Close modal when clicking outside or on backdrop
     if (projectModal) {
-        projectModal.addEventListener('click', (e) => {
-            if (e.target === projectModal || e.target.classList.contains('modern-modal-backdrop')) {
-                closeProjectModal();
-            }
-        });
+        projectModal.removeEventListener('click', handleModalBackdropClick); // Remove existing if any
+        projectModal.addEventListener('click', handleModalBackdropClick);
+    }
+
+    function handleModalBackdropClick(e) {
+        if (e.target === projectModal || e.target.classList.contains('modern-modal-backdrop')) {
+            closeProjectModal();
+        }
     }
 
     // ESC key support
-    document.addEventListener('keydown', (e) => {
+    document.removeEventListener('keydown', handleEscapeKey); // Remove existing if any
+    document.addEventListener('keydown', handleEscapeKey);
+
+    function handleEscapeKey(e) {
         if (e.key === 'Escape' && projectModal && projectModal.classList.contains('active')) {
             closeProjectModal();
         }
-    });
+    }
 
     // Alternative event delegation approach for edit/delete buttons
     // This ensures the handlers work even for dynamically generated content
     document.addEventListener('click', function(e) {
+        // Check what type of delete button was clicked by examining the parent context
+        const deleteButton = e.target.closest('.action-btn.delete');
+        if (deleteButton) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Determine the context by checking parent elements
+            const projectRow = deleteButton.closest('tr[data-project-id]');
+            const skillRow = deleteButton.closest('tr[data-skill-id]');
+            const achievementCard = deleteButton.closest('.achievement-card[data-achievement-id]');
+            const messageRow = deleteButton.closest('tr[data-message-id]');
+            
+            if (projectRow) {
+                // Project delete
+                const projectId = projectRow.getAttribute('data-project-id');
+                if (projectId) {
+                    console.log('Delete project button clicked via event delegation, Project ID:', projectId);
+                    deleteProjectById(projectId);
+                } else {
+                    console.error('Could not find project ID for delete button');
+                    showToast('Could not find project ID', 'error');
+                }
+            } else if (skillRow) {
+                // Skill delete
+                const skillId = deleteButton.getAttribute('data-id');
+                if (skillId) {
+                    console.log('Delete skill button clicked, ID:', skillId);
+                    deleteSkill(skillId);
+                } else {
+                    console.error('Could not find skill ID for delete button');
+                    showToast('Could not find skill ID', 'error');
+                }
+            } else if (achievementCard) {
+                // Achievement delete
+                const achievementId = deleteButton.getAttribute('data-id');
+                if (achievementId) {
+                    console.log('Delete achievement button clicked, ID:', achievementId);
+                    deleteAchievement(achievementId);
+                } else {
+                    console.error('Could not find achievement ID for delete button');
+                    showToast('Could not find achievement ID', 'error');
+                }
+            } else if (messageRow) {
+                // Message delete
+                const messageId = deleteButton.getAttribute('data-id');
+                if (messageId) {
+                    console.log('Delete message button clicked, ID:', messageId);
+                    deleteMessage(messageId);
+                } else {
+                    console.error('Could not find message ID for delete button');
+                    showToast('Could not find message ID', 'error');
+                }
+            } else {
+                console.error('Unknown delete button context');
+                showToast('Could not determine what to delete', 'error');
+            }
+            
+            return false;
+        }
+
+        // Handle project edit buttons
         if (e.target.closest('.edit-project')) {
             e.preventDefault();
             e.stopPropagation();
@@ -847,21 +955,80 @@ function initializeProjectFunctionality() {
             
             return false;
         }
-        
-        if (e.target.closest('.action-btn.delete')) {
+
+        // Handle skill edit buttons
+        if (e.target.closest('.edit-skill')) {
             e.preventDefault();
             e.stopPropagation();
             
-            const button = e.target.closest('.action-btn.delete');
-            const row = button.closest('tr');
-            const projectId = row ? row.getAttribute('data-project-id') : null;
+            const button = e.target.closest('.edit-skill');
+            const skillId = button.getAttribute('data-id');
             
-            if (projectId) {
-                console.log('Delete button clicked via event delegation, Project ID:', projectId);
-                deleteProjectById(projectId);
-            } else {
-                console.error('Could not find project ID for delete button');
-                showToast('Could not find project ID', 'error');
+            if (skillId) {
+                console.log('Edit skill clicked, ID:', skillId);
+                editSkill(skillId);
+            }
+            
+            return false;
+        }
+
+        // Handle achievement edit buttons
+        if (e.target.closest('.edit-achievement')) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const button = e.target.closest('.edit-achievement');
+            const achievementId = button.getAttribute('data-id');
+            
+            if (achievementId) {
+                console.log('Edit achievement clicked, ID:', achievementId);
+                editAchievement(achievementId);
+            }
+            
+            return false;
+        }
+
+        // Message action handlers
+        if (e.target.closest('.view-message')) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const button = e.target.closest('.view-message');
+            const messageId = button.getAttribute('data-id');
+            
+            if (messageId) {
+                console.log('View message clicked, ID:', messageId);
+                viewMessage(messageId);
+            }
+            
+            return false;
+        }
+
+        if (e.target.closest('.mark-read')) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const button = e.target.closest('.mark-read');
+            const messageId = button.getAttribute('data-id');
+            
+            if (messageId) {
+                console.log('Mark as read clicked, ID:', messageId);
+                markMessageAsRead(messageId);
+            }
+            
+            return false;
+        }
+
+        if (e.target.closest('.reply-message')) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const button = e.target.closest('.reply-message');
+            const messageId = button.getAttribute('data-id');
+            
+            if (messageId) {
+                console.log('Reply message clicked, ID:', messageId);
+                replyToMessage(messageId);
             }
             
             return false;
@@ -1027,3 +1194,294 @@ document.addEventListener('keydown', function(e) {
         }
     }
 });
+
+// Message handling functions
+function viewMessage(messageId) {
+    console.log('Viewing message:', messageId);
+    
+    // Make AJAX call to get message details
+    $.ajax({
+        type: "POST",
+        url: "Dashboard.aspx/GetMessage",
+        data: JSON.stringify({ messageId: parseInt(messageId) }),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function(response) {
+            try {
+                const result = JSON.parse(response.d);
+                if (result.success) {
+                    const message = result.message;
+                    showMessageModal(message);
+                    
+                    // Mark as read if not already read
+                    if (!message.isRead) {
+                        markMessageAsRead(messageId);
+                    }
+                } else {
+                    showToast(result.message, 'error');
+                }
+            } catch (e) {
+                showToast('Error parsing message data', 'error');
+            }
+        },
+        error: function(xhr, status, error) {
+            showToast('Error loading message: ' + error, 'error');
+        }
+    });
+}
+
+function markMessageAsRead(messageId) {
+    console.log('Marking message as read:', messageId);
+    
+    $.ajax({
+        type: "POST",
+        url: "Dashboard.aspx/MarkMessageAsRead",
+        data: JSON.stringify({ messageId: parseInt(messageId) }),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function(response) {
+            try {
+                const result = JSON.parse(response.d);
+                if (result.success) {
+                    showToast(result.message, 'success');
+                    // Reload messages to update status
+                    if (typeof loadMessages === 'function') {
+                        setTimeout(() => {
+                            loadMessages();
+                        }, 1000);
+                    }
+                } else {
+                    showToast(result.message, 'error');
+                }
+            } catch (e) {
+                showToast('Error parsing response', 'error');
+            }
+        },
+        error: function(xhr, status, error) {
+            showToast('Error marking message as read: ' + error, 'error');
+        }
+    });
+}
+
+function deleteMessage(messageId) {
+    if (confirm('Are you sure you want to delete this message?')) {
+        console.log('Deleting message:', messageId);
+        showToast('Deleting message...', 'info');
+        
+        $.ajax({
+            type: "POST",
+            url: "Dashboard.aspx/DeleteMessage",
+            data: JSON.stringify({ messageId: parseInt(messageId) }),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(response) {
+                try {
+                    const result = JSON.parse(response.d);
+                    if (result.success) {
+                        showToast(result.message, 'success');
+                        // Reload messages to update list
+                        if (typeof loadMessages === 'function') {
+                            setTimeout(() => {
+                                loadMessages();
+                            }, 1000);
+                        }
+                    } else {
+                        showToast(result.message, 'error');
+                    }
+                } catch (e) {
+                    showToast('Error parsing response', 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX error deleting message:', error, xhr.responseText);
+                showToast('Error deleting message: ' + error, 'error');
+            }
+        });
+    }
+}
+
+function replyToMessage(messageId) {
+    console.log('Reply to message:', messageId);
+    // For now, just show a placeholder
+    showToast('Reply functionality coming soon!', 'info');
+}
+
+function showMessageModal(message) {
+    // Create a simple modal to display message details
+    const modalHtml = `
+        <div id="messageModal" class="modal" style="display: block; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+            <div class="modal-content" style="background-color: var(--bg-primary); margin: 5% auto; padding: 20px; border-radius: 10px; width: 80%; max-width: 600px; max-height: 80vh; overflow-y: auto;">
+                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color);">
+                    <h2 style="margin: 0; color: var(--text-primary);">Message Details</h2>
+                    <button onclick="closeMessageModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-secondary);">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="message-info" style="margin-bottom: 20px;">
+                        <div style="margin-bottom: 10px;"><strong>From:</strong> ${message.name} (${message.email})</div>
+                        <div style="margin-bottom: 10px;"><strong>Subject:</strong> ${message.subject}</div>
+                        <div style="margin-bottom: 10px;"><strong>Priority:</strong> ${message.priority}</div>
+                        <div style="margin-bottom: 10px;"><strong>Date:</strong> ${message.dateReceived}</div>
+                        <div style="margin-bottom: 10px;"><strong>Status:</strong> ${message.isRead ? 'Read' : 'Unread'}</div>
+                    </div>
+                    <div class="message-content" style="background: var(--bg-secondary); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <strong>Message:</strong><br>
+                        <div style="margin-top: 10px; white-space: pre-wrap;">${message.messageText}</div>
+                    </div>
+                    ${message.ipAddress ? `<div style="font-size: 0.9rem; color: var(--text-tertiary);"><strong>IP Address:</strong> ${message.ipAddress}</div>` : ''}
+                </div>
+                <div class="modal-footer" style="text-align: right; margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border-color);">
+                    <button onclick="closeMessageModal()" class="btn btn-secondary" style="margin-right: 10px;">Close</button>
+                    ${!message.isRead ? `<button onclick="markMessageAsRead(${message.id}); closeMessageModal();" class="btn btn-primary">Mark as Read</button>` : ''}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing modal if any
+    const existingModal = document.getElementById('messageModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Add modal to body
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function closeMessageModal() {
+    const modal = document.getElementById('messageModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Skills delete function
+function deleteSkill(skillId) {
+    if (confirm('Are you sure you want to delete this skill?')) {
+        console.log('Deleting skill:', skillId);
+        showToast('Deleting skill...', 'info');
+        
+        $.ajax({
+            type: "POST",
+            url: "Dashboard.aspx/DeleteSkill",
+            data: JSON.stringify({ id: parseInt(skillId) }),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(response) {
+                try {
+                    const result = JSON.parse(response.d);
+                    if (result.success) {
+                        showToast(result.message, 'success');
+                        // Reload skills to update list
+                        if (typeof loadSkills === 'function') {
+                            setTimeout(() => {
+                                loadSkills();
+                            }, 1000);
+                        }
+                    } else {
+                        showToast(result.message, 'error');
+                    }
+                } catch (e) {
+                    showToast('Error parsing response', 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX error deleting skill:', error, xhr.responseText);
+                showToast('Error deleting skill: ' + error, 'error');
+            }
+        });
+    }
+}
+
+// Achievements delete function
+function deleteAchievement(achievementId) {
+    if (confirm('Are you sure you want to delete this achievement?')) {
+        console.log('Deleting achievement:', achievementId);
+        showToast('Deleting achievement...', 'info');
+        
+        $.ajax({
+            type: "POST",
+            url: "Dashboard.aspx/DeleteAchievement",
+            data: JSON.stringify({ id: parseInt(achievementId) }),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(response) {
+                try {
+                    const result = JSON.parse(response.d);
+                    if (result.success) {
+                        showToast(result.message, 'success');
+                        // Reload achievements to update list
+                        if (typeof loadAchievements === 'function') {
+                            setTimeout(() => {
+                                loadAchievements();
+                            }, 1000);
+                        }
+                    } else {
+                        showToast(result.message, 'error');
+                    }
+                } catch (e) {
+                    showToast('Error parsing response', 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX error deleting achievement:', error, xhr.responseText);
+                showToast('Error deleting achievement: ' + error, 'error');
+            }
+        });
+    }
+}
+
+// Enhanced deleteMessage function
+function deleteMessage(messageId) {
+    if (confirm('Are you sure you want to delete this message?')) {
+        console.log('Deleting message:', messageId);
+        showToast('Deleting message...', 'info');
+        
+        $.ajax({
+            type: "POST",
+            url: "Dashboard.aspx/DeleteMessage",
+            data: JSON.stringify({ messageId: parseInt(messageId) }),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(response) {
+                try {
+                    const result = JSON.parse(response.d);
+                    if (result.success) {
+                        showToast(result.message, 'success');
+                        // Reload messages to update list
+                        if (typeof loadMessages === 'function') {
+                            setTimeout(() => {
+                                loadMessages();
+                            }, 1000);
+                        }
+                    } else {
+                        showToast(result.message, 'error');
+                    }
+                } catch (e) {
+                    showToast('Error parsing response', 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX error deleting message:', error, xhr.responseText);
+                showToast('Error deleting message: ' + error, 'error');
+            }
+        });
+    }
+}
+
+// Edit skill function placeholder
+function editSkill(skillId) {
+    console.log('Edit skill:', skillId);
+    showToast('Edit skill functionality coming soon!', 'info');
+}
+
+// Edit achievement function placeholder  
+function editAchievement(achievementId) {
+    console.log('Edit achievement:', achievementId);
+    showToast('Edit achievement functionality coming soon!', 'info');
+}
+
+// Global functions for skill and achievement actions
+window.deleteSkill = deleteSkill;
+window.deleteAchievement = deleteAchievement;
+window.editSkill = editSkill;
+window.editAchievement = editAchievement;

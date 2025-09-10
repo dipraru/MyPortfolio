@@ -23,7 +23,7 @@
 
             <!-- Body -->
             <div class="modern-modal-body">
-                <form id="projectForm" novalidate>
+                <form id="projectForm" novalidate onsubmit="return false;">
                     <!-- Alert Section for Validation Messages -->
                     <div class="validation-alert" id="projectValidationAlert" style="display: none;">
                         <div class="alert-icon">
@@ -164,74 +164,28 @@
 </div>
 
 <script>
-// Ensure the projects modal functions are properly defined
+// Lightweight Project Modal Form Interactions - No Duplicate Event Handlers
 (function() {
     'use strict';
     
-    let projectModalInitialized = false;
-
-    function initializeProjectModal() {
-        if (projectModalInitialized) return;
-        
-        console.log('Initializing Projects Modal...');
-        
-        const modal = document.getElementById('projectModal');
-        const form = document.getElementById('projectForm');
-        const saveBtn = document.getElementById('saveProjectBtn');
-        const cancelBtn = document.getElementById('cancelProjectBtn');
-        const closeBtn = document.getElementById('closeProjectModal');
-
-        if (!modal || !form || !saveBtn || !cancelBtn || !closeBtn) {
-            console.error('Projects modal elements not found');
-            return;
-        }
-
-        // Initialize form interactions
-        initializeProjectFormInteractions();
-        
-        // Close modal events with proper event handling
-        function handleCloseModal(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('Closing projects modal via button');
-            closeProjectModalHandler();
-        }
-        
-        cancelBtn.removeEventListener('click', handleCloseModal);
-        closeBtn.removeEventListener('click', handleCloseModal);
-        
-        cancelBtn.addEventListener('click', handleCloseModal);
-        closeBtn.addEventListener('click', handleCloseModal);
-
-        // Click outside to close
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal || e.target.classList.contains('modern-modal-backdrop')) {
-                console.log('Closing projects modal via backdrop click');
-                closeProjectModalHandler();
-            }
-        });
-
-        // Save button
-        saveBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('Save project button clicked');
-            saveProject();
-        });
-
-        // ESC key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
-                console.log('Closing projects modal via ESC key');
-                closeProjectModalHandler();
-            }
-        });
-
-        projectModalInitialized = true;
-        console.log('Projects modal initialized successfully');
-    }
+    let formInteractionsInitialized = false;
 
     function initializeProjectFormInteractions() {
+        if (formInteractionsInitialized) return;
+        
+        console.log('Initializing Project Form Interactions...');
+        
+        // Prevent form submission
+        const form = document.getElementById('projectForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Form submission prevented');
+                return false;
+            });
+        }
+        
         // Description counter
         const descriptionTextarea = document.getElementById('projectDescription');
         const descriptionCounter = document.getElementById('projectDescriptionCounter');
@@ -310,7 +264,6 @@
         }
 
         // Real-time validation
-        const form = document.getElementById('projectForm');
         if (form) {
             const requiredFields = form.querySelectorAll('[required]');
             requiredFields.forEach(field => {
@@ -318,6 +271,9 @@
                 field.addEventListener('input', () => clearProjectFieldError(field));
             });
         }
+
+        formInteractionsInitialized = true;
+        console.log('Project form interactions initialized successfully');
     }
 
     function isValidUrl(string) {
@@ -379,308 +335,14 @@
         field.classList.remove('error');
     }
 
-    function validateProjectForm() {
-        const form = document.getElementById('projectForm');
-        if (!form) return false;
-        
-        const requiredFields = form.querySelectorAll('[required]');
-        const validationAlert = document.getElementById('projectValidationAlert');
-        const validationList = document.getElementById('projectValidationList');
-        
-        let isValid = true;
-        const errors = [];
-
-        requiredFields.forEach(field => {
-            if (!validateProjectField(field)) {
-                isValid = false;
-                const label = form.querySelector(`label[for="${field.id}"]`);
-                const fieldName = label ? label.textContent.replace(/[^\w\s]/gi, '').trim() : field.placeholder;
-                errors.push(fieldName);
-            }
-        });
-
-        if (!isValid && validationAlert && validationList) {
-            validationList.innerHTML = errors.map(error => `<li>${error}</li>`).join('');
-            validationAlert.style.display = 'block';
-            validationAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        } else if (validationAlert) {
-            validationAlert.style.display = 'none';
-        }
-
-        return isValid;
-    }
-
-    function openProjectModal(isEdit = false, projectId = null) {
-        console.log('Opening modern project modal...', { isEdit, projectId });
-        const modal = document.getElementById('projectModal');
-        const title = document.getElementById('projectModalTitle');
-        const saveBtn = document.getElementById('saveProjectBtn');
-        const btnText = saveBtn?.querySelector('.btn-text');
-        
-        if (!modal) {
-            console.error('Project modal not found!');
-            return;
-        }
-        
-        // Initialize if not already done
-        initializeProjectModal();
-        
-        // Set current project ID for editing
-        window.currentProjectId = projectId;
-        
-        // Reset form
-        resetProjectForm();
-        
-        if (title) {
-            title.textContent = isEdit ? 'Edit Project' : 'Add New Project';
-        }
-        
-        if (btnText) {
-            btnText.textContent = isEdit ? 'Update Project' : 'Add Project';
-        }
-        
-        modal.classList.add('active');
-        document.body.classList.add('modal-open');
-        
-        if (isEdit && projectId) {
-            // Load project data for editing (this function should exist in dashboard.js)
-            if (typeof loadProjectData === 'function') {
-                loadProjectData(projectId);
-            }
-        }
-        
-        // Focus on first input with delay for animation
-        setTimeout(() => {
-            const firstInput = document.getElementById('projectTitle');
-            if (firstInput) {
-                firstInput.focus();
-            }
-        }, 300);
-        
-        console.log('Modern project modal opened successfully');
-    }
-
-    function closeProjectModalHandler() {
-        console.log('Closing modern project modal...');
-        const modal = document.getElementById('projectModal');
-        if (modal) {
-            modal.classList.remove('active');
-            document.body.classList.remove('modal-open');
-            
-            // Clear current project ID
-            window.currentProjectId = null;
-            
-            // Reset form after animation
-            setTimeout(() => {
-                resetProjectForm();
-            }, 300);
-            
-            console.log('Modern project modal closed successfully');
-        }
-    }
-
-    function resetProjectForm() {
-        const form = document.getElementById('projectForm');
-        if (form) {
-            form.reset();
-        }
-        
-        // Reset specific elements
-        const descriptionCounter = document.getElementById('projectDescriptionCounter');
-        if (descriptionCounter) descriptionCounter.textContent = '0';
-        
-        const imagePreview = document.getElementById('projectImagePreview');
-        if (imagePreview) imagePreview.style.display = 'none';
-        
-        const tagsPreview = document.getElementById('projectTagsPreview');
-        if (tagsPreview) tagsPreview.innerHTML = '';
-        
-        const githubPreviewBtn = document.getElementById('githubPreviewBtn');
-        if (githubPreviewBtn) githubPreviewBtn.style.display = 'none';
-        
-        const livePreviewBtn = document.getElementById('livePreviewBtn');
-        if (livePreviewBtn) livePreviewBtn.style.display = 'none';
-        
-        // Clear validation
-        const validationAlert = document.getElementById('projectValidationAlert');
-        if (validationAlert) validationAlert.style.display = 'none';
-        
-        if (form) {
-            form.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
-            form.querySelectorAll('.field-error').forEach(el => el.style.display = 'none');
-        }
-    }
-
-    function saveProject() {
-        console.log('Saving modern project...');
-        
-        if (!validateProjectForm()) {
-            return;
-        }
-
-        const saveBtn = document.getElementById('saveProjectBtn');
-        const btnContent = saveBtn?.querySelector('.btn-content');
-        const btnLoading = saveBtn?.querySelector('.btn-loading');
-        
-        // Show loading state
-        if (saveBtn) saveBtn.disabled = true;
-        if (btnContent) btnContent.style.display = 'none';
-        if (btnLoading) btnLoading.style.display = 'flex';
-
-        const title = document.getElementById('projectTitle')?.value?.trim() || '';
-        const description = document.getElementById('projectDescription')?.value?.trim() || '';
-        const imageUrl = document.getElementById('projectImage')?.value?.trim() || '';
-        const tags = document.getElementById('projectTags')?.value?.trim() || '';
-        const githubUrl = document.getElementById('projectGithub')?.value?.trim() || '';
-        const liveUrl = document.getElementById('projectLive')?.value?.trim() || '';
-
-        console.log('Modern project data:', { title, description, imageUrl, tags, githubUrl, liveUrl });
-
-        const currentProjectId = window.currentProjectId;
-        
-        if (currentProjectId) {
-            // Update existing project
-            updateProject(currentProjectId, title, description, imageUrl, tags, githubUrl, liveUrl);
-        } else {
-            // Add new project
-            addProject(title, description, imageUrl, tags, githubUrl, liveUrl);
-        }
-    }
-
-    function addProject(title, description, imageUrl, tags, githubUrl, liveUrl) {
-        fetch('/Admin/Dashboard.aspx/AddProject', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json; charset=utf-8'
-            },
-            body: JSON.stringify({
-                title: title,
-                description: description,
-                imageUrl: imageUrl,
-                tags: tags,
-                githubUrl: githubUrl,
-                liveUrl: liveUrl
-            })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            const result = JSON.parse(data.d);
-            
-            if (result.success) {
-                if (typeof showToast === 'function') {
-                    showToast(result.message, 'success');
-                }
-                closeProjectModalHandler();
-                
-                // Reload projects data
-                if (typeof loadProjectsFromServer === 'function') {
-                    setTimeout(() => {
-                        loadProjectsFromServer();
-                    }, 1000);
-                }
-            } else {
-                if (typeof showToast === 'function') {
-                    showToast(result.message, 'error');
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Error adding project:', error);
-            if (typeof showToast === 'function') {
-                showToast('Error adding project. Please try again.', 'error');
-            }
-        })
-        .finally(() => {
-            // Reset loading state
-            const saveBtn = document.getElementById('saveProjectBtn');
-            const btnContent = saveBtn?.querySelector('.btn-content');
-            const btnLoading = saveBtn?.querySelector('.btn-loading');
-            
-            if (saveBtn) saveBtn.disabled = false;
-            if (btnContent) btnContent.style.display = 'flex';
-            if (btnLoading) btnLoading.style.display = 'none';
-        });
-    }
-
-    function updateProject(id, title, description, imageUrl, tags, githubUrl, liveUrl) {
-        fetch('/Admin/Dashboard.aspx/UpdateProject', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json; charset=utf-8'
-            },
-            body: JSON.stringify({
-                id: parseInt(id),
-                title: title,
-                description: description,
-                imageUrl: imageUrl,
-                tags: tags,
-                githubUrl: githubUrl,
-                liveUrl: liveUrl
-            })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            const result = JSON.parse(data.d);
-            
-            if (result.success) {
-                if (typeof showToast === 'function') {
-                    showToast(result.message, 'success');
-                }
-                closeProjectModalHandler();
-                
-                // Reload projects data
-                if (typeof loadProjectsFromServer === 'function') {
-                    setTimeout(() => {
-                        loadProjectsFromServer();
-                    }, 1000);
-                }
-            } else {
-                if (typeof showToast === 'function') {
-                    showToast(result.message, 'error');
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Error updating project:', error);
-            if (typeof showToast === 'function') {
-                showToast('Error updating project. Please try again.', 'error');
-            }
-        })
-        .finally(() => {
-            // Reset loading state
-            const saveBtn = document.getElementById('saveProjectBtn');
-            const btnContent = saveBtn?.querySelector('.btn-content');
-            const btnLoading = saveBtn?.querySelector('.btn-loading');
-            
-            if (saveBtn) saveBtn.disabled = false;
-            if (btnContent) btnContent.style.display = 'flex';
-            if (btnLoading) btnLoading.style.display = 'none';
-        });
-    }
-
-    // Initialize when DOM is ready
+    // Initialize when DOM is ready or immediately if already loaded
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializeProjectModal);
+        document.addEventListener('DOMContentLoaded', initializeProjectFormInteractions);
     } else {
-        initializeProjectModal();
+        initializeProjectFormInteractions();
     }
 
-    // Global functions to open project modal
-    window.openProjectModal = openProjectModal;
-    window.closeProjectModalHandler = closeProjectModalHandler;
-    window.saveProject = saveProject;
-    
-    console.log('Projects modal script loaded');
+    console.log('Project Modal form interactions script loaded');
 })();
 </script>
 

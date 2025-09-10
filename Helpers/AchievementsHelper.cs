@@ -258,5 +258,126 @@ namespace MyPortfolio.Helpers
                 return (int)(DateTime.Now.Ticks % int.MaxValue);
             }
         }
+
+        public static Achievement GetAchievementById(int id)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(GetConnectionString()))
+                {
+                    conn.Open();
+                    
+                    string query = @"
+                        SELECT Id, Title, Description, Category, Organization, DateAchieved, 
+                               CertificateUrl, BadgeUrl, IsVerified, IsActive, DisplayOrder, 
+                               DateAdded, DateModified, CreatedBy
+                        FROM Achievements 
+                        WHERE Id = @Id";
+
+                    using (var cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", id);
+                        
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                return new Achievement
+                                {
+                                    Id = Convert.ToInt32(reader["Id"]),
+                                    Title = reader["Title"].ToString(),
+                                    Description = reader["Description"].ToString(),
+                                    Category = reader["Category"].ToString(),
+                                    Organization = reader["Organization"]?.ToString(),
+                                    DateAchieved = Convert.ToDateTime(reader["DateAchieved"]),
+                                    CertificateUrl = reader["CertificateUrl"]?.ToString(),
+                                    BadgeUrl = reader["BadgeUrl"]?.ToString(),
+                                    IsVerified = Convert.ToBoolean(reader["IsVerified"]),
+                                    IsActive = Convert.ToBoolean(reader["IsActive"]),
+                                    DisplayOrder = Convert.ToInt32(reader["DisplayOrder"]),
+                                    DateAdded = Convert.ToDateTime(reader["DateAdded"]),
+                                    DateModified = Convert.ToDateTime(reader["DateModified"]),
+                                    CreatedBy = reader["CreatedBy"]?.ToString()
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error getting achievement by ID: {ex.Message}");
+                throw;
+            }
+
+            return null;
+        }
+
+        public static bool UpdateAchievement(Achievement achievement)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(GetConnectionString()))
+                {
+                    conn.Open();
+                    
+                    string query = @"
+                        UPDATE Achievements 
+                        SET Title = @Title, Description = @Description, Category = @Category, 
+                            Organization = @Organization, DateAchieved = @DateAchieved, 
+                            CertificateUrl = @CertificateUrl, BadgeUrl = @BadgeUrl, DateModified = GETDATE()
+                        WHERE Id = @Id";
+
+                    using (var cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", achievement.Id);
+                        cmd.Parameters.AddWithValue("@Title", achievement.Title ?? "");
+                        cmd.Parameters.AddWithValue("@Description", achievement.Description ?? "");
+                        cmd.Parameters.AddWithValue("@Category", achievement.Category ?? "");
+                        cmd.Parameters.AddWithValue("@Organization", achievement.Organization ?? "");
+                        cmd.Parameters.AddWithValue("@DateAchieved", achievement.DateAchieved);
+                        cmd.Parameters.AddWithValue("@CertificateUrl", achievement.CertificateUrl ?? "");
+                        cmd.Parameters.AddWithValue("@BadgeUrl", achievement.BadgeUrl ?? "");
+
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating achievement: {ex.Message}");
+                return false;
+            }
+        }
+
+        public static bool DeleteAchievement(int id)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(GetConnectionString()))
+                {
+                    conn.Open();
+                    
+                    // Soft delete by setting IsActive to false
+                    string query = @"
+                        UPDATE Achievements 
+                        SET IsActive = 0, DateModified = GETDATE() 
+                        WHERE Id = @Id";
+
+                    using (var cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", id);
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error deleting achievement: {ex.Message}");
+                return false;
+            }
+        }
     }
 }

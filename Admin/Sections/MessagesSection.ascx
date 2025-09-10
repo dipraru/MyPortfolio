@@ -344,4 +344,140 @@ window.loadMessages = loadMessages;
 .tab-content.active {
     display: block;
 }
+
+/* Message-specific styles */
+.message-sender {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sender-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.sender-email {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.message-subject {
+    font-weight: 500;
+    color: var(--text-primary);
+    position: relative;
+}
+
+.priority-indicator {
+    color: var(--danger);
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.priority-high {
+    border-left: 3px solid var(--danger);
+    padding-left: 8px;
+}
+
+.priority-normal {
+    border-left: 3px solid var(--primary);
+    padding-left: 8px;
+}
+
+.priority-low {
+    border-left: 3px solid var(--success);
+    padding-left: 8px;
+}
+
+.message-preview {
+    color: var(--text-secondary);
+    line-height: 1.4;
+    font-size: 0.9rem;
+}
+
+.message-date {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.message-read {
+    opacity: 0.8;
+}
+
+.message-unread {
+    font-weight: 500;
+}
+
+.message-unread .sender-name {
+    font-weight: 700;
+}
+
+.message-unread .message-subject {
+    font-weight: 600;
+}
+
+/* Action buttons specific to messages */
+.action-btn.view-message {
+    background-color: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
+}
+
+.action-btn.view-message:hover {
+    background-color: var(--primary);
+    color: white;
+}
+
+.action-btn.mark-read {
+    background-color: rgba(var(--success-rgb), 0.1);
+    color: var(--success);
+}
+
+.action-btn.mark-read:hover {
+    background-color: var(--success);
+    color: white;
+}
+
+.action-btn.reply-message {
+    background-color: rgba(var(--warning-rgb), 0.1);
+    color: var(--warning);
+}
+
+.action-btn.reply-message:hover {
+    background-color: var(--warning);
+    color: white;
+}
+
+/* Modal styles for message details */
+.modal {
+    font-family: inherit;
+}
+
+.modal .btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.modal .btn-primary {
+    background-color: var(--primary);
+    color: white;
+}
+
+.modal .btn-primary:hover {
+    background-color: var(--primary-dark);
+}
+
+.modal .btn-secondary {
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.modal .btn-secondary:hover {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
 </style>

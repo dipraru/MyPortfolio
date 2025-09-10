@@ -10,127 +10,41 @@
     <div class="content-section">
         <div class="section-header">
             <h2 class="section-title">Personal Information</h2>
-            <button class="btn" id="updateProfileBtn">
+            <button class="btn" id="updateProfileBtn" type="button">
                 <i class="fas fa-save"></i>
                 <span>Save Changes</span>
             </button>
         </div>
         
-        <form id="profileForm">
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="fullName">Full Name</label>
-                    <input type="text" id="fullName" class="form-control" value="Dipra Datta" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="title">Professional Title</label>
-                    <input type="text" id="title" class="form-control" value="Competitive Programmer" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" class="form-control" value="dipra.datta@example.com" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="phone">Phone</label>
-                    <input type="tel" id="phone" class="form-control" value="+880 1XXX-XXXXXX">
-                </div>
-                
-                <div class="form-group">
-                    <label for="location">Location</label>
-                    <input type="text" id="location" class="form-control" value="Khulna, Bangladesh">
-                </div>
-                
-                <div class="form-group">
-                    <label for="bio">Bio</label>
-                    <textarea id="bio" class="form-control" rows="3">BSc. in CSE at KUET | Algorithm Enthusiast | Problem Solver</textarea>
-                </div>
-            </div>
-        </form>
-    </div>
-    
-    <div class="content-section">
-        <div class="section-header">
-            <h2 class="section-title">Education</h2>
-            <button class="btn" id="addEducationBtn">
-                <i class="fas fa-plus"></i>
-                <span>Add Education</span>
-            </button>
-        </div>
-        
-        <div class="profile-section">
-            <div class="profile-item">
-                <div class="profile-item-icon">
-                    <i class="fas fa-university"></i>
-                </div>
-                <div class="profile-item-content">
-                    <div class="profile-item-title">BSc. in CSE</div>
-                    <div class="profile-item-subtitle">KUET (Khulna University of Engineering & Technology)</div>
-                </div>
-                <div class="profile-item-actions">
-                    <button class="action-btn edit-education" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="action-btn delete" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" class="form-control" runat="server" id="fullName" required>
             </div>
             
-            <div class="profile-item">
-                <div class="profile-item-icon">
-                    <i class="fas fa-school"></i>
-                </div>
-                <div class="profile-item-content">
-                    <div class="profile-item-title">HSC - GPA 5.0</div>
-                    <div class="profile-item-subtitle">BAF Shaheen College, Kurmitola</div>
-                </div>
-                <div class="profile-item-actions">
-                    <button class="action-btn edit-education" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="action-btn delete" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
+            <div class="form-group">
+                <label>Professional Title</label>
+                <input type="text" class="form-control" runat="server" id="title" required>
             </div>
             
-            <div class="profile-item">
-                <div class="profile-item-icon">
-                    <i class="fas fa-school"></i>
-                </div>
-                <div class="profile-item-content">
-                    <div class="profile-item-title">SSC - GPA 5.0</div>
-                    <div class="profile-item-subtitle">Sammilani Secondary School, Chalitatola, Narail</div>
-                </div>
-                <div class="profile-item-actions">
-                    <button class="action-btn edit-education" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="action-btn delete" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" class="form-control" runat="server" id="email" required>
             </div>
             
-            <div class="profile-item">
-                <div class="profile-item-icon">
-                    <i class="fas fa-certificate"></i>
-                </div>
-                <div class="profile-item-content">
-                    <div class="profile-item-title">JSC - GPA 5.0</div>
-                    <div class="profile-item-subtitle">Sammilani Secondary School, Chalitatola, Narail</div>
-                </div>
-                <div class="profile-item-actions">
-                    <button class="action-btn edit-education" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="action-btn delete" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="tel" class="form-control" runat="server" id="phone">
+            </div>
+            
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" class="form-control" runat="server" id="location">
+            </div>
+            
+            <div class="form-group">
+                <label>Bio</label>
+                <textarea class="form-control" rows="3" runat="server" id="bio"></textarea>
             </div>
         </div>
     </div>
@@ -138,83 +52,268 @@
     <div class="content-section">
         <div class="section-header">
             <h2 class="section-title">Programming Profile</h2>
-            <button class="btn" id="updateProgrammingProfileBtn">
+            <button class="btn" id="updateProgrammingProfileBtn" type="button">
                 <i class="fas fa-save"></i>
                 <span>Save Changes</span>
             </button>
         </div>
         
-        <form id="programmingProfileForm">
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="experience">Experience (Years)</label>
-                    <input type="number" id="experience" class="form-control" value="3" min="0" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="codeforcesRating">Codeforces Rating</label>
-                    <input type="number" id="codeforcesRating" class="form-control" value="1771" min="0" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="codeforcesRank">Codeforces Rank</label>
-                    <input type="text" id="codeforcesRank" class="form-control" value="Expert" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="codechefRating">Codechef Rating</label>
-                    <input type="number" id="codechefRating" class="form-control" value="1913" min="0" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="codechefRank">Codechef Rank</label>
-                    <input type="text" id="codechefRank" class="form-control" value="4-star" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="problemsSolved">Problems Solved</label>
-                    <input type="number" id="problemsSolved" class="form-control" value="1676" min="0" required>
-                </div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Experience (Years)</label>
+                <input type="number" class="form-control" runat="server" id="experience" min="0" required>
             </div>
-        </form>
+            
+            <div class="form-group">
+                <label>Codeforces Rating</label>
+                <input type="number" class="form-control" runat="server" id="codeforcesRating" min="0" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Codeforces Rank</label>
+                <input type="text" class="form-control" runat="server" id="codeforcesRank" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Codechef Rating</label>
+                <input type="number" class="form-control" runat="server" id="codechefRating" min="0" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Codechef Rank</label>
+                <input type="text" class="form-control" runat="server" id="codechefRank" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Problems Solved</label>
+                <input type="number" class="form-control" runat="server" id="problemsSolved" min="0" required>
+            </div>
+        </div>
     </div>
     
     <div class="content-section">
         <div class="section-header">
             <h2 class="section-title">Social Links</h2>
-            <button class="btn" id="updateSocialLinksBtn">
+            <button class="btn" id="updateSocialLinksBtn" type="button">
                 <i class="fas fa-save"></i>
                 <span>Save Changes</span>
             </button>
         </div>
         
-        <form id="socialLinksForm">
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="github">GitHub</label>
-                    <input type="text" id="github" class="form-control" value="https://github.com/dipra-datta">
-                </div>
-                
-                <div class="form-group">
-                    <label for="codeforces">Codeforces</label>
-                    <input type="text" id="codeforces" class="form-control" value="https://codeforces.com/profile/dipra_datta">
-                </div>
-                
-                <div class="form-group">
-                    <label for="linkedin">LinkedIn</label>
-                    <input type="text" id="linkedin" class="form-control" value="https://linkedin.com/in/dipra-datta">
-                </div>
-                
-                <div class="form-group">
-                    <label for="twitter">Twitter</label>
-                    <input type="text" id="twitter" class="form-control" value="https://twitter.com/dipra_datta">
-                </div>
-                
-                <div class="form-group">
-                    <label for="kaggle">Kaggle</label>
-                    <input type="text" id="kaggle" class="form-control" value="https://kaggle.com/dipra-datta">
-                </div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>GitHub</label>
+                <input type="text" class="form-control" runat="server" id="github">
             </div>
-        </form>
+            
+            <div class="form-group">
+                <label>Codeforces</label>
+                <input type="text" class="form-control" runat="server" id="codeforces">
+            </div>
+            
+            <div class="form-group">
+                <label>LinkedIn</label>
+                <input type="text" class="form-control" runat="server" id="linkedin">
+            </div>
+            
+            <div class="form-group">
+                <label>Twitter</label>
+                <input type="text" class="form-control" runat="server" id="twitter">
+            </div>
+            
+            <div class="form-group">
+                <label>Kaggle</label>
+                <input type="text" class="form-control" runat="server" id="kaggle">
+            </div>
+        </div>
     </div>
+    
+    <!-- Hidden field for profile ID -->
+    <asp:HiddenField ID="hiddenProfileId" runat="server" />
 </div>
+
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    // Wait a bit for the page to fully load
+    setTimeout(function() {
+        initializeProfileSaveButtons();
+    }, 500);
+});
+
+function initializeProfileSaveButtons() {
+    console.log('Initializing profile save buttons...');
+    
+    // Personal Information Save Button
+    const updateProfileBtn = document.getElementById('updateProfileBtn');
+    if (updateProfileBtn) {
+        updateProfileBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            saveProfileData('personal');
+        });
+        console.log('Personal Information save button initialized');
+    }
+
+    // Programming Profile Save Button
+    const updateProgrammingProfileBtn = document.getElementById('updateProgrammingProfileBtn');
+    if (updateProgrammingProfileBtn) {
+        updateProgrammingProfileBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            saveProfileData('programming');
+        });
+        console.log('Programming Profile save button initialized');
+    }
+
+    // Social Links Save Button
+    const updateSocialLinksBtn = document.getElementById('updateSocialLinksBtn');
+    if (updateSocialLinksBtn) {
+        updateSocialLinksBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            saveProfileData('social');
+        });
+        console.log('Social Links save button initialized');
+    }
+
+    console.log('All profile save buttons initialized');
+}
+
+function saveProfileData(section) {
+    console.log('Saving profile section:', section);
+    
+    // Collect all form data
+    const profileData = collectProfileFormData();
+    
+    if (!profileData) {
+        showProfileToast('Please fill in all required fields', 'error');
+        return;
+    }
+    
+    // Show loading toast
+    showProfileToast('Saving profile changes...', 'info');
+    
+    // Call server-side method to save profile
+    $.ajax({
+        type: "POST",
+        url: "Dashboard.aspx/SaveProfileData",
+        data: JSON.stringify(profileData),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function(response) {
+            try {
+                const result = JSON.parse(response.d);
+                if (result.success) {
+                    showProfileToast(result.message, 'success');
+                    // Update the hidden profile ID if this was a new profile
+                    if (result.profileId) {
+                        const hiddenProfileId = document.getElementById('<%=hiddenProfileId.ClientID%>');
+                        if (hiddenProfileId) {
+                            hiddenProfileId.value = result.profileId;
+                        }
+                    }
+                } else {
+                    showProfileToast(result.message, 'error');
+                }
+            } catch (e) {
+                console.error('Error parsing save profile response:', e);
+                showProfileToast('Error parsing response', 'error');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error saving profile:', error, xhr.responseText);
+            showProfileToast('Error saving profile: ' + error, 'error');
+        }
+    });
+}
+
+function collectProfileFormData() {
+    try {
+        // Get form elements using their client IDs (generated by ASP.NET)
+        const fullName = document.getElementById('<%=fullName.ClientID%>');
+        const title = document.getElementById('<%=title.ClientID%>');
+        const email = document.getElementById('<%=email.ClientID%>');
+        const phone = document.getElementById('<%=phone.ClientID%>');
+        const location = document.getElementById('<%=location.ClientID%>');
+        const bio = document.getElementById('<%=bio.ClientID%>');
+        const experience = document.getElementById('<%=experience.ClientID%>');
+        const codeforcesRating = document.getElementById('<%=codeforcesRating.ClientID%>');
+        const codeforcesRank = document.getElementById('<%=codeforcesRank.ClientID%>');
+        const codechefRating = document.getElementById('<%=codechefRating.ClientID%>');
+        const codechefRank = document.getElementById('<%=codechefRank.ClientID%>');
+        const problemsSolved = document.getElementById('<%=problemsSolved.ClientID%>');
+        const github = document.getElementById('<%=github.ClientID%>');
+        const codeforces = document.getElementById('<%=codeforces.ClientID%>');
+        const linkedin = document.getElementById('<%=linkedin.ClientID%>');
+        const twitter = document.getElementById('<%=twitter.ClientID%>');
+        const kaggle = document.getElementById('<%=kaggle.ClientID%>');
+        const hiddenProfileId = document.getElementById('<%=hiddenProfileId.ClientID%>');
+
+        console.log('Found elements:', {
+            fullName: fullName ? 'OK' : 'MISSING',
+            title: title ? 'OK' : 'MISSING',
+            email: email ? 'OK' : 'MISSING'
+        });
+
+        // Validate required fields
+        if (!fullName || !fullName.value.trim()) {
+            showProfileToast('Full Name is required', 'error');
+            return null;
+        }
+        if (!title || !title.value.trim()) {
+            showProfileToast('Professional Title is required', 'error');
+            return null;
+        }
+        if (!email || !email.value.trim()) {
+            showProfileToast('Email is required', 'error');
+            return null;
+        }
+
+        // Collect all data
+        const profileData = {
+            id: hiddenProfileId ? parseInt(hiddenProfileId.value) || 0 : 0,
+            fullName: fullName.value.trim(),
+            title: title.value.trim(),
+            email: email.value.trim(),
+            phone: phone ? phone.value.trim() : '',
+            location: location ? location.value.trim() : '',
+            bio: bio ? bio.value.trim() : '',
+            experience: experience ? parseInt(experience.value) || 0 : 0,
+            codeforcesRating: codeforcesRating ? parseInt(codeforcesRating.value) || 0 : 0,
+            codeforcesRank: codeforcesRank ? codeforcesRank.value.trim() : '',
+            codechefRating: codechefRating ? parseInt(codechefRating.value) || 0 : 0,
+            codechefRank: codechefRank ? codechefRank.value.trim() : '',
+            problemsSolved: problemsSolved ? parseInt(problemsSolved.value) || 0 : 0,
+            githubUrl: github ? github.value.trim() : '',
+            codeforcesUrl: codeforces ? codeforces.value.trim() : '',
+            linkedinUrl: linkedin ? linkedin.value.trim() : '',
+            twitterUrl: twitter ? twitter.value.trim() : '',
+            kaggleUrl: kaggle ? kaggle.value.trim() : ''
+        };
+
+        console.log('Collected profile data:', profileData);
+        return profileData;
+    } catch (error) {
+        console.error('Error collecting profile data:', error);
+        showProfileToast('Error collecting form data', 'error');
+        return null;
+    }
+}
+
+// Fallback toast function if showToast is not available
+function showProfileToast(message, type) {
+    // Try to use the global showToast function first
+    if (typeof showToast === 'function') {
+        showToast(message, type);
+        return;
+    }
+    
+    // Fallback to alert or console
+    if (type === 'error') {
+        alert('Error: ' + message);
+        console.error('Profile Error:', message);
+    } else if (type === 'success') {
+        alert('Success: ' + message);
+        console.log('Profile Success:', message);
+    } else {
+        console.log('Profile Info:', message);
+    }
+}
+</script>

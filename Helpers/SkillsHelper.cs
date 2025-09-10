@@ -325,5 +325,124 @@ namespace MyPortfolio.Helpers
                 return (int)(DateTime.Now.Ticks % int.MaxValue);
             }
         }
+
+        public static Skill GetSkillById(int id)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(GetConnectionString()))
+                {
+                    conn.Open();
+                    
+                    string query = @"
+                        SELECT Id, Name, Description, Category, ProficiencyLevel, YearsOfExperience, 
+                               IconClass, IconColor, IsActive, DisplayOrder, DateAdded, DateModified, CreatedBy
+                        FROM Skills 
+                        WHERE Id = @Id";
+
+                    using (var cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", id);
+                        
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                return new Skill
+                                {
+                                    Id = Convert.ToInt32(reader["Id"]),
+                                    Name = reader["Name"].ToString(),
+                                    Description = reader["Description"]?.ToString(),
+                                    Category = reader["Category"].ToString(),
+                                    ProficiencyPercentage = Convert.ToInt32(reader["ProficiencyLevel"]),
+                                    YearsOfExperience = reader["YearsOfExperience"] == DBNull.Value ? (decimal?)null : Convert.ToDecimal(reader["YearsOfExperience"]),
+                                    IconClass = reader["IconClass"]?.ToString(),
+                                    IconColor = reader["IconColor"]?.ToString(),
+                                    IsActive = Convert.ToBoolean(reader["IsActive"]),
+                                    DisplayOrder = Convert.ToInt32(reader["DisplayOrder"]),
+                                    DateAdded = Convert.ToDateTime(reader["DateAdded"]),
+                                    DateModified = Convert.ToDateTime(reader["DateModified"]),
+                                    CreatedBy = reader["CreatedBy"]?.ToString()
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error getting skill by ID: {ex.Message}");
+                throw;
+            }
+
+            return null;
+        }
+
+        public static bool UpdateSkill(Skill skill)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(GetConnectionString()))
+                {
+                    conn.Open();
+                    
+                    string query = @"
+                        UPDATE Skills 
+                        SET Name = @Name, Description = @Description, Category = @Category, 
+                            ProficiencyLevel = @ProficiencyLevel, YearsOfExperience = @YearsOfExperience, 
+                            IconClass = @IconClass, IconColor = @IconColor, DateModified = GETDATE()
+                        WHERE Id = @Id";
+
+                    using (var cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", skill.Id);
+                        cmd.Parameters.AddWithValue("@Name", skill.Name ?? "");
+                        cmd.Parameters.AddWithValue("@Description", skill.Description ?? "");
+                        cmd.Parameters.AddWithValue("@Category", skill.Category ?? "");
+                        cmd.Parameters.AddWithValue("@ProficiencyLevel", skill.ProficiencyPercentage);
+                        cmd.Parameters.AddWithValue("@YearsOfExperience", skill.YearsOfExperience.HasValue ? (object)skill.YearsOfExperience.Value : DBNull.Value);
+                        cmd.Parameters.AddWithValue("@IconClass", skill.IconClass ?? "");
+                        cmd.Parameters.AddWithValue("@IconColor", skill.IconColor ?? "");
+
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating skill: {ex.Message}");
+                return false;
+            }
+        }
+
+        public static bool DeleteSkill(int id)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(GetConnectionString()))
+                {
+                    conn.Open();
+                    
+                    // Soft delete by setting IsActive to false
+                    string query = @"
+                        UPDATE Skills 
+                        SET IsActive = 0, DateModified = GETDATE() 
+                        WHERE Id = @Id";
+
+                    using (var cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", id);
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error deleting skill: {ex.Message}");
+                return false;
+            }
+        }
     }
 }
