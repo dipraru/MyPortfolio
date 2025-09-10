@@ -54,7 +54,7 @@
                     </div>
                     <div class="about-info">
                         <h4>Experience</h4>
-                        <p>3 years in Competitive Programming</p>
+                        <p><%= GetExperience() %> years in Competitive Programming</p>
                     </div>
                 </li>
                 <li>
@@ -63,7 +63,7 @@
                     </div>
                     <div class="about-info">
                         <h4>Codeforces</h4>
-                        <p>Max Rating: 1771 (Expert)</p>
+                        <p>Max Rating: <%= GetCodeforcesRating() %> (<%= GetCodeforcesRank() %>)</p>
                     </div>
                 </li>
                 <li>
@@ -72,7 +72,7 @@
                     </div>
                     <div class="about-info">
                         <h4>Codechef</h4>
-                        <p>Rating: 1913 (4-star)</p>
+                        <p>Rating: <%= GetCodechefRating() %> (<%= GetCodechefRank() %>)</p>
                     </div>
                 </li>
                 <li>
@@ -81,7 +81,7 @@
                     </div>
                     <div class="about-info">
                         <h4>Problems Solved</h4>
-                        <p>1676+ across multiple platforms</p>
+                        <p><%= GetProblemsSolved() %>+ across multiple platforms</p>
                     </div>
                 </li>
             </ul>
@@ -99,7 +99,7 @@
         <div class="stats-illustrations">
             <div class="stats-code">
                 <div style="color: var(--primary);">int rating =</div>
-                <div style="color: var(--accent);">1771;</div>
+                <div style="color: var(--accent);"><%= GetCodeforcesRating() %>;</div>
             </div>
             <div class="stats-algo">
                 <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
@@ -112,22 +112,22 @@
         <div class="stats-grid">
             <div class="stat-box">
                 <div class="stat-icon"><i class="fas fa-trophy"></i></div>
-                <div class="stat-number" data-target="1771">0</div>
+                <div class="stat-number" data-target="<%= GetCodeforcesRating() %>">0</div>
                 <div class="stat-label">Codeforces Rating</div>
             </div>
             <div class="stat-box">
                 <div class="stat-icon"><i class="fas fa-star"></i></div>
-                <div class="stat-number" data-target="1913">0</div>
+                <div class="stat-number" data-target="<%= GetCodechefRating() %>">0</div>
                 <div class="stat-label">Codechef Rating</div>
             </div>
             <div class="stat-box">
                 <div class="stat-icon"><i class="fas fa-puzzle-piece"></i></div>
-                <div class="stat-number" data-target="1676">0</div>
+                <div class="stat-number" data-target="<%= GetProblemsSolved() %>">0</div>
                 <div class="stat-label">Problems Solved</div>
             </div>
             <div class="stat-box">
                 <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
-                <div class="stat-number" data-target="3">0</div>
+                <div class="stat-number" data-target="<%= GetExperience() %>">0</div>
                 <div class="stat-label">Years Experience</div>
             </div>
         </div>

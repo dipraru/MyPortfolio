@@ -11,7 +11,133 @@ namespace MyPortfolio.Sections
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Competition achievements will be loaded via GetCompetitionAchievementsHtml() method
+            // About section loads profile and achievement data dynamically
+        }
+
+        /// <summary>
+        /// Gets the years of experience from profile database
+        /// </summary>
+        /// <returns>Experience years or default value</returns>
+        protected string GetExperience()
+        {
+            try
+            {
+                var profile = ProfileHelper.GetActiveProfile();
+                return profile?.Experience.ToString() ?? "3";
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading experience: {ex.Message}");
+                return "3";
+            }
+        }
+
+        /// <summary>
+        /// Gets the Codeforces rating from profile database
+        /// </summary>
+        /// <returns>Codeforces rating or default value</returns>
+        protected string GetCodeforcesRating()
+        {
+            try
+            {
+                var profile = ProfileHelper.GetActiveProfile();
+                return profile?.CodeforcesRating.ToString() ?? "1771";
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading Codeforces rating: {ex.Message}");
+                return "1771";
+            }
+        }
+
+        /// <summary>
+        /// Gets the Codeforces rank from profile database
+        /// </summary>
+        /// <returns>Codeforces rank or default value</returns>
+        protected string GetCodeforcesRank()
+        {
+            try
+            {
+                var profile = ProfileHelper.GetActiveProfile();
+                return profile?.CodeforcesRank ?? "Expert";
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading Codeforces rank: {ex.Message}");
+                return "Expert";
+            }
+        }
+
+        /// <summary>
+        /// Gets the Codechef rating from profile database
+        /// </summary>
+        /// <returns>Codechef rating or default value</returns>
+        protected string GetCodechefRating()
+        {
+            try
+            {
+                var profile = ProfileHelper.GetActiveProfile();
+                return profile?.CodechefRating.ToString() ?? "1913";
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading Codechef rating: {ex.Message}");
+                return "1913";
+            }
+        }
+
+        /// <summary>
+        /// Gets the Codechef rank from profile database
+        /// </summary>
+        /// <returns>Codechef rank or default value</returns>
+        protected string GetCodechefRank()
+        {
+            try
+            {
+                var profile = ProfileHelper.GetActiveProfile();
+                return profile?.CodechefRank ?? "4-star";
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading Codechef rank: {ex.Message}");
+                return "4-star";
+            }
+        }
+
+        /// <summary>
+        /// Gets the problems solved count from profile database
+        /// </summary>
+        /// <returns>Problems solved count or default value</returns>
+        protected string GetProblemsSolved()
+        {
+            try
+            {
+                var profile = ProfileHelper.GetActiveProfile();
+                return profile?.ProblemsSolved.ToString() ?? "1676";
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading problems solved: {ex.Message}");
+                return "1676";
+            }
+        }
+
+        /// <summary>
+        /// Gets the Codeforces profile URL from profile database
+        /// </summary>
+        /// <returns>Codeforces URL or default value</returns>
+        protected string GetCodeforcesUrl()
+        {
+            try
+            {
+                var profile = ProfileHelper.GetActiveProfile();
+                return profile?.CodeforcesUrl ?? "codeforces.com/profile/dipra_datta";
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading Codeforces URL: {ex.Message}");
+                return "codeforces.com/profile/dipra_datta";
+            }
         }
 
         /// <summary>

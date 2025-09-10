@@ -9,28 +9,28 @@
                 <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
                 <div class="contact-text">
                     <h3>Location</h3>
-                    <p>Khulna, Bangladesh</p>
+                    <p><%= GetLocation() %></p>
                 </div>
             </div>
             <div class="contact-item">
                 <div class="contact-icon"><i class="fas fa-envelope"></i></div>
                 <div class="contact-text">
                     <h3>Email</h3>
-                    <p>dipra.datta@example.com</p>
+                    <p><%= GetEmail() %></p>
                 </div>
             </div>
             <div class="contact-item">
                 <div class="contact-icon"><i class="fas fa-phone-alt"></i></div>
                 <div class="contact-text">
                     <h3>Phone</h3>
-                    <p>+880 1XXX-XXXXXX</p>
+                    <p><%= GetPhone() %></p>
                 </div>
             </div>
             <div class="contact-item">
                 <div class="contact-icon"><i class="fas fa-code"></i></div>
                 <div class="contact-text">
                     <h3>Codeforces</h3>
-                    <p>codeforces.com/profile/dipra_datta</p>
+                    <p><%= GetCodeforcesProfile() %></p>
                 </div>
             </div>
         </div>

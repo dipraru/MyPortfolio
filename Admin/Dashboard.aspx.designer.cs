@@ -22,5 +22,95 @@ namespace MyPortfolio.Admin
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
+
+        /// <summary>
+        /// DashboardOverview1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::MyPortfolio.Admin.Sections.DashboardOverview DashboardOverview1;
+
+        /// <summary>
+        /// ProjectsSection1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::MyPortfolio.Admin.Sections.ProjectsSection ProjectsSection1;
+
+        /// <summary>
+        /// SkillsSection1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::MyPortfolio.Admin.Sections.SkillsSection SkillsSection1;
+
+        /// <summary>
+        /// AchievementsSection1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::MyPortfolio.Admin.Sections.AchievementsSection AchievementsSection1;
+
+        /// <summary>
+        /// ProfileSection1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::MyPortfolio.Admin.Sections.ProfileSection ProfileSection1;
+
+        /// <summary>
+        /// MessagesSection1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::MyPortfolio.Admin.Sections.MessagesSection MessagesSection1;
+
+        /// <summary>
+        /// ProjectModal1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::MyPortfolio.Admin.Controls.ProjectModal ProjectModal1;
+
+        /// <summary>
+        /// SkillModal1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::MyPortfolio.Admin.Controls.SkillModal SkillModal1;
+
+        /// <summary>
+        /// AchievementModal1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::MyPortfolio.Admin.Controls.AchievementModal AchievementModal1;
+
+        /// <summary>
+        /// Toast1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::MyPortfolio.Admin.Controls.Toast Toast1;
     }
 }
