@@ -168,6 +168,7 @@
     <Content Include="Sections\SkillsSection.ascx" />
     <Content Include="setup_database.aspx" />
     <Content Include="setup_messages.aspx" />
+    <Content Include="setup_profile.aspx" />
     <Content Include="setup_projects.aspx" />
     <Content Include="Site.Master" />
     <Content Include="UpdateSkillsProficiencyToPercentage.sql" />
@@ -371,6 +372,13 @@
     </Compile>
     <Compile Include="setup_messages.aspx.designer.cs">
       <DependentUpon>setup_messages.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="setup_profile.aspx.cs">
+      <DependentUpon>setup_profile.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="setup_profile.aspx.designer.cs">
+      <DependentUpon>setup_profile.aspx</DependentUpon>
     </Compile>
     <Compile Include="setup_projects.aspx.cs">
       <DependentUpon>setup_projects.aspx</DependentUpon>

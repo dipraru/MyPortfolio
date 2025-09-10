@@ -57,6 +57,9 @@ function initializeDashboard() {
     // Project functionality
     initializeProjectFunctionality();
 
+    // Profile functionality
+    initializeProfileFunctionality();
+
     // Tab functionality for messages
     initializeTabFunctionality();
 
@@ -67,6 +70,70 @@ function initializeDashboard() {
     checkModalElements();
 
     console.log('Dashboard loaded successfully!');
+}
+
+// Initialize Profile Functionality
+function initializeProfileFunctionality() {
+    // Personal Information Save Button
+    const updateProfileBtn = document.getElementById('updateProfileBtn');
+    if (updateProfileBtn) {
+        updateProfileBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            saveProfileSection('personal');
+        });
+    }
+
+    // Programming Profile Save Button
+    const updateProgrammingProfileBtn = document.getElementById('updateProgrammingProfileBtn');
+    if (updateProgrammingProfileBtn) {
+        updateProgrammingProfileBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            saveProfileSection('programming');
+        });
+    }
+
+    // Social Links Save Button
+    const updateSocialLinksBtn = document.getElementById('updateSocialLinksBtn');
+    if (updateSocialLinksBtn) {
+        updateSocialLinksBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            saveProfileSection('social');
+        });
+    }
+
+    console.log('Profile functionality initialized');
+}
+
+function saveProfileSection(section) {
+    console.log('Saving profile section:', section);
+    
+    // Show loading toast
+    showToast('Saving profile changes...', 'info');
+    
+    // Call server-side method to save profile
+    $.ajax({
+        type: "POST",
+        url: "Dashboard.aspx/SaveProfile",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function(response) {
+            try {
+                const result = JSON.parse(response.d);
+                if (result.success) {
+                    showToast(result.message, 'success');
+                } else {
+                    showToast(result.message, 'error');
+                }
+            } catch (e) {
+                console.error('Error parsing save profile response:', e);
+                showToast('Error parsing response', 'error');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error saving profile:', error, xhr.responseText);
+            showToast('Error saving profile: ' + error, 'error');
+        }
+    });
 }
 
 // Function to check if all required modal elements exist

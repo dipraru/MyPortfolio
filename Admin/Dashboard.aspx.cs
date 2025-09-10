@@ -951,6 +951,38 @@ namespace MyPortfolio.Admin
             }
         }
 
+        [System.Web.Services.WebMethod]
+        public static string SaveProfile()
+        {
+            try
+            {
+                // Get the profile section control from the current page context
+                var currentPage = (Dashboard)System.Web.HttpContext.Current.CurrentHandler;
+                var profileSection = currentPage.FindControl("profileSectionControl") as Admin.Sections.ProfileSection;
+                
+                if (profileSection != null)
+                {
+                    bool success = profileSection.SaveProfile();
+                    if (success)
+                    {
+                        return "{\"success\": true, \"message\": \"Profile saved successfully!\"}";
+                    }
+                    else
+                    {
+                        return "{\"success\": false, \"message\": \"Failed to save profile.\"}";
+                    }
+                }
+                else
+                {
+                    return "{\"success\": false, \"message\": \"Profile section not found.\"}";
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"{{\"success\": false, \"message\": \"Error saving profile: {EscapeJsonString(ex.Message)}\"}}";
+            }
+        }
+
         private static string EscapeJsonString(string input)
         {
             if (string.IsNullOrEmpty(input))
