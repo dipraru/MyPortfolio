@@ -254,6 +254,48 @@ namespace MyPortfolio.Helpers
             }
         }
 
+        public static int InsertProfileAndGetId(Profile profile)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(GetConnectionString()))
+                {
+                    conn.Open();
+                    
+                    string query = @"
+                        INSERT INTO Profile (
+                            FullName, Title, Email, Phone, Location, Bio,
+                            Experience, CodeforcesRating, CodeforcesRank,
+                            CodechefRating, CodechefRank, ProblemsSolved,
+                            GitHubUrl, CodeforcesUrl, LinkedInUrl, TwitterUrl, KaggleUrl,
+                            IsActive, CreatedBy
+                        ) VALUES (
+                            @FullName, @Title, @Email, @Phone, @Location, @Bio,
+                            @Experience, @CodeforcesRating, @CodeforcesRank,
+                            @CodechefRating, @CodechefRank, @ProblemsSolved,
+                            @GitHubUrl, @CodeforcesUrl, @LinkedInUrl, @TwitterUrl, @KaggleUrl,
+                            @IsActive, @CreatedBy
+                        );
+                        SELECT SCOPE_IDENTITY();";
+
+                    using (var cmd = new SqlCommand(query, conn))
+                    {
+                        AddProfileParameters(cmd, profile);
+                        cmd.Parameters.AddWithValue("@IsActive", profile.IsActive);
+                        cmd.Parameters.AddWithValue("@CreatedBy", "admin");
+
+                        object result = cmd.ExecuteScalar();
+                        return result != null ? Convert.ToInt32(result) : 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error inserting profile: {ex.Message}");
+                return 0;
+            }
+        }
+
         private static void AddProfileParameters(SqlCommand cmd, Profile profile)
         {
             cmd.Parameters.AddWithValue("@FullName", profile.FullName ?? "");

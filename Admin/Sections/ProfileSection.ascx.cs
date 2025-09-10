@@ -88,59 +88,5 @@ namespace MyPortfolio.Admin.Sections
 
             hiddenProfileId.Value = "0"; // 0 indicates new profile
         }
-
-        public bool SaveProfile()
-        {
-            try
-            {
-                var profile = new Profile
-                {
-                    Id = int.Parse(hiddenProfileId.Value),
-                    FullName = fullName.Value.Trim(),
-                    Title = title.Value.Trim(),
-                    Email = email.Value.Trim(),
-                    Phone = phone.Value.Trim(),
-                    Location = location.Value.Trim(),
-                    Bio = bio.Value.Trim(),
-                    Experience = int.Parse(experience.Value),
-                    CodeforcesRating = int.Parse(codeforcesRating.Value),
-                    CodeforcesRank = codeforcesRank.Value.Trim(),
-                    CodechefRating = int.Parse(codechefRating.Value),
-                    CodechefRank = codechefRank.Value.Trim(),
-                    ProblemsSolved = int.Parse(problemsSolved.Value),
-                    GitHubUrl = github.Value.Trim(),
-                    CodeforcesUrl = codeforces.Value.Trim(),
-                    LinkedInUrl = linkedin.Value.Trim(),
-                    TwitterUrl = twitter.Value.Trim(),
-                    KaggleUrl = kaggle.Value.Trim(),
-                    IsActive = true
-                };
-
-                bool success;
-                if (profile.Id == 0)
-                {
-                    // Insert new profile
-                    success = ProfileHelper.InsertProfile(profile);
-                }
-                else
-                {
-                    // Update existing profile
-                    success = ProfileHelper.UpdateProfile(profile);
-                }
-
-                if (success)
-                {
-                    // Reload data to get updated information
-                    LoadProfileData();
-                }
-
-                return success;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error saving profile: {ex.Message}");
-                return false;
-            }
-        }
     }
 }

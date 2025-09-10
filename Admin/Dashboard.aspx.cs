@@ -952,29 +952,59 @@ namespace MyPortfolio.Admin
         }
 
         [System.Web.Services.WebMethod]
-        public static string SaveProfile()
+        public static string SaveProfileData(int id, string fullName, string title, string email, string phone, 
+                                           string location, string bio, int experience, int codeforcesRating, 
+                                           string codeforcesRank, int codechefRating, string codechefRank, 
+                                           int problemsSolved, string githubUrl, string codeforcesUrl, 
+                                           string linkedinUrl, string twitterUrl, string kaggleUrl)
         {
             try
             {
-                // Get the profile section control from the current page context
-                var currentPage = (Dashboard)System.Web.HttpContext.Current.CurrentHandler;
-                var profileSection = currentPage.FindControl("profileSectionControl") as Admin.Sections.ProfileSection;
-                
-                if (profileSection != null)
+                var profile = new Profile
                 {
-                    bool success = profileSection.SaveProfile();
-                    if (success)
-                    {
-                        return "{\"success\": true, \"message\": \"Profile saved successfully!\"}";
-                    }
-                    else
-                    {
-                        return "{\"success\": false, \"message\": \"Failed to save profile.\"}";
-                    }
+                    Id = id,
+                    FullName = fullName,
+                    Title = title,
+                    Email = email,
+                    Phone = phone,
+                    Location = location,
+                    Bio = bio,
+                    Experience = experience,
+                    CodeforcesRating = codeforcesRating,
+                    CodeforcesRank = codeforcesRank,
+                    CodechefRating = codechefRating,
+                    CodechefRank = codechefRank,
+                    ProblemsSolved = problemsSolved,
+                    GitHubUrl = githubUrl,
+                    CodeforcesUrl = codeforcesUrl,
+                    LinkedInUrl = linkedinUrl,
+                    TwitterUrl = twitterUrl,
+                    KaggleUrl = kaggleUrl,
+                    IsActive = true
+                };
+
+                bool success;
+                int profileId = id;
+
+                if (id == 0)
+                {
+                    // Insert new profile
+                    profileId = ProfileHelper.InsertProfileAndGetId(profile);
+                    success = profileId > 0;
                 }
                 else
                 {
-                    return "{\"success\": false, \"message\": \"Profile section not found.\"}";
+                    // Update existing profile
+                    success = ProfileHelper.UpdateProfile(profile);
+                }
+
+                if (success)
+                {
+                    return $"{{\"success\": true, \"message\": \"Profile saved successfully!\", \"profileId\": {profileId}}}";
+                }
+                else
+                {
+                    return "{\"success\": false, \"message\": \"Failed to save profile.\"}";
                 }
             }
             catch (Exception ex)
