@@ -2,7 +2,7 @@
 
 <!-- Achievements Section -->
 <section id="achievements" class="fade-in">
-    <h2 class="section-title">Competitive Achievements</h2>
+    <h2 class="section-title">Achievements</h2>
     <div class="achievements-container">
         <%= GetAchievementsHtml() %>
     </div>
