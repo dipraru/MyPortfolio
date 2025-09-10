@@ -342,6 +342,101 @@ namespace MyPortfolio.Admin
         }
 
         [System.Web.Services.WebMethod]
+        public static string UpdateSkill(int id, string name, string description, string category, int proficiencyLevel, 
+                                        decimal yearsOfExperience, string iconClass, string iconColor)
+        {
+            try
+            {
+                var skill = SkillsHelper.GetSkillById(id);
+                if (skill == null)
+                {
+                    return "{\"success\": false, \"message\": \"Skill not found.\"}";
+                }
+
+                skill.Name = name;
+                skill.Description = description;
+                skill.Category = category;
+                skill.ProficiencyPercentage = proficiencyLevel;
+                skill.YearsOfExperience = yearsOfExperience > 0 ? yearsOfExperience : (decimal?)null;
+                skill.IconClass = iconClass;
+                skill.IconColor = iconColor;
+
+                bool success = SkillsHelper.UpdateSkill(skill);
+                if (success)
+                {
+                    return "{\"success\": true, \"message\": \"Skill updated successfully!\"}";
+                }
+                else
+                {
+                    return "{\"success\": false, \"message\": \"Failed to update skill.\"}";
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"{{\"success\": false, \"message\": \"Error updating skill: {EscapeJsonString(ex.Message)}\"}}";
+            }
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string DeleteSkill(int id)
+        {
+            try
+            {
+                bool success = SkillsHelper.DeleteSkill(id);
+                if (success)
+                {
+                    return "{\"success\": true, \"message\": \"Skill deleted successfully!\"}";
+                }
+                else
+                {
+                    return "{\"success\": false, \"message\": \"Failed to delete skill.\"}";
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"{{\"success\": false, \"message\": \"Error deleting skill: {EscapeJsonString(ex.Message)}\"}}";
+            }
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string GetSkill(int id)
+        {
+            try
+            {
+                var skill = SkillsHelper.GetSkillById(id);
+                if (skill == null)
+                {
+                    return "{\"success\": false, \"message\": \"Skill not found.\"}";
+                }
+
+                // Escape quotes in strings to prevent JSON parsing errors
+                string name = EscapeJsonString(skill.Name);
+                string description = EscapeJsonString(skill.Description ?? "");
+                string category = EscapeJsonString(skill.Category);
+                string iconClass = EscapeJsonString(skill.IconClass ?? "");
+                string iconColor = EscapeJsonString(skill.IconColor ?? "");
+
+                return $@"{{
+                    ""success"": true,
+                    ""skill"": {{
+                        ""id"": {skill.Id},
+                        ""name"": ""{name}"",
+                        ""description"": ""{description}"",
+                        ""category"": ""{category}"",
+                        ""proficiencyLevel"": {skill.ProficiencyPercentage},
+                        ""yearsOfExperience"": {(skill.YearsOfExperience?.ToString() ?? "0")},
+                        ""iconClass"": ""{iconClass}"",
+                        ""iconColor"": ""{iconColor}""
+                    }}
+                }}";
+            }
+            catch (Exception ex)
+            {
+                return $"{{\"success\": false, \"message\": \"Error getting skill: {EscapeJsonString(ex.Message)}\"}}";
+            }
+        }
+
+        [System.Web.Services.WebMethod]
         public static string GetAllSkillsData()
         {
             try
@@ -452,6 +547,108 @@ namespace MyPortfolio.Admin
             catch (Exception ex)
             {
                 return $"{{\"success\": false, \"message\": \"Error adding achievement: {EscapeJsonString(ex.Message)}\"}}";
+            }
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string UpdateAchievement(int id, string title, string description, string category, string organization, 
+                                             string dateAchieved, string certificateUrl, string badgeUrl)
+        {
+            try
+            {
+                var achievement = AchievementsHelper.GetAchievementById(id);
+                if (achievement == null)
+                {
+                    return "{\"success\": false, \"message\": \"Achievement not found.\"}";
+                }
+
+                DateTime achievedDate;
+                if (!DateTime.TryParse(dateAchieved, out achievedDate))
+                {
+                    return "{\"success\": false, \"message\": \"Invalid date format.\"}";
+                }
+
+                achievement.Title = title;
+                achievement.Description = description;
+                achievement.Category = category;
+                achievement.Organization = organization;
+                achievement.DateAchieved = achievedDate;
+                achievement.CertificateUrl = certificateUrl;
+                achievement.BadgeUrl = badgeUrl;
+
+                bool success = AchievementsHelper.UpdateAchievement(achievement);
+                if (success)
+                {
+                    return "{\"success\": true, \"message\": \"Achievement updated successfully!\"}";
+                }
+                else
+                {
+                    return "{\"success\": false, \"message\": \"Failed to update achievement.\"}";
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"{{\"success\": false, \"message\": \"Error updating achievement: {EscapeJsonString(ex.Message)}\"}}";
+            }
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string DeleteAchievement(int id)
+        {
+            try
+            {
+                bool success = AchievementsHelper.DeleteAchievement(id);
+                if (success)
+                {
+                    return "{\"success\": true, \"message\": \"Achievement deleted successfully!\"}";
+                }
+                else
+                {
+                    return "{\"success\": false, \"message\": \"Failed to delete achievement.\"}";
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"{{\"success\": false, \"message\": \"Error deleting achievement: {EscapeJsonString(ex.Message)}\"}}";
+            }
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string GetAchievement(int id)
+        {
+            try
+            {
+                var achievement = AchievementsHelper.GetAchievementById(id);
+                if (achievement == null)
+                {
+                    return "{\"success\": false, \"message\": \"Achievement not found.\"}";
+                }
+
+                // Escape quotes in strings to prevent JSON parsing errors
+                string title = EscapeJsonString(achievement.Title);
+                string description = EscapeJsonString(achievement.Description);
+                string category = EscapeJsonString(achievement.Category);
+                string organization = EscapeJsonString(achievement.Organization ?? "");
+                string certificateUrl = EscapeJsonString(achievement.CertificateUrl ?? "");
+                string badgeUrl = EscapeJsonString(achievement.BadgeUrl ?? "");
+
+                return $@"{{
+                    ""success"": true,
+                    ""achievement"": {{
+                        ""id"": {achievement.Id},
+                        ""title"": ""{title}"",
+                        ""description"": ""{description}"",
+                        ""category"": ""{category}"",
+                        ""organization"": ""{organization}"",
+                        ""dateAchieved"": ""{achievement.DateAchieved:yyyy-MM-dd}"",
+                        ""certificateUrl"": ""{certificateUrl}"",
+                        ""badgeUrl"": ""{badgeUrl}""
+                    }}
+                }}";
+            }
+            catch (Exception ex)
+            {
+                return $"{{\"success\": false, \"message\": \"Error getting achievement: {EscapeJsonString(ex.Message)}\"}}";
             }
         }
 

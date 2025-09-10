@@ -866,6 +866,67 @@ function initializeProjectFunctionality() {
     // Alternative event delegation approach for edit/delete buttons
     // This ensures the handlers work even for dynamically generated content
     document.addEventListener('click', function(e) {
+        // Check what type of delete button was clicked by examining the parent context
+        const deleteButton = e.target.closest('.action-btn.delete');
+        if (deleteButton) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Determine the context by checking parent elements
+            const projectRow = deleteButton.closest('tr[data-project-id]');
+            const skillRow = deleteButton.closest('tr[data-skill-id]');
+            const achievementCard = deleteButton.closest('.achievement-card[data-achievement-id]');
+            const messageRow = deleteButton.closest('tr[data-message-id]');
+            
+            if (projectRow) {
+                // Project delete
+                const projectId = projectRow.getAttribute('data-project-id');
+                if (projectId) {
+                    console.log('Delete project button clicked via event delegation, Project ID:', projectId);
+                    deleteProjectById(projectId);
+                } else {
+                    console.error('Could not find project ID for delete button');
+                    showToast('Could not find project ID', 'error');
+                }
+            } else if (skillRow) {
+                // Skill delete
+                const skillId = deleteButton.getAttribute('data-id');
+                if (skillId) {
+                    console.log('Delete skill button clicked, ID:', skillId);
+                    deleteSkill(skillId);
+                } else {
+                    console.error('Could not find skill ID for delete button');
+                    showToast('Could not find skill ID', 'error');
+                }
+            } else if (achievementCard) {
+                // Achievement delete
+                const achievementId = deleteButton.getAttribute('data-id');
+                if (achievementId) {
+                    console.log('Delete achievement button clicked, ID:', achievementId);
+                    deleteAchievement(achievementId);
+                } else {
+                    console.error('Could not find achievement ID for delete button');
+                    showToast('Could not find achievement ID', 'error');
+                }
+            } else if (messageRow) {
+                // Message delete
+                const messageId = deleteButton.getAttribute('data-id');
+                if (messageId) {
+                    console.log('Delete message button clicked, ID:', messageId);
+                    deleteMessage(messageId);
+                } else {
+                    console.error('Could not find message ID for delete button');
+                    showToast('Could not find message ID', 'error');
+                }
+            } else {
+                console.error('Unknown delete button context');
+                showToast('Could not determine what to delete', 'error');
+            }
+            
+            return false;
+        }
+
+        // Handle project edit buttons
         if (e.target.closest('.edit-project')) {
             e.preventDefault();
             e.stopPropagation();
@@ -884,21 +945,34 @@ function initializeProjectFunctionality() {
             
             return false;
         }
-        
-        if (e.target.closest('.action-btn.delete')) {
+
+        // Handle skill edit buttons
+        if (e.target.closest('.edit-skill')) {
             e.preventDefault();
             e.stopPropagation();
             
-            const button = e.target.closest('.action-btn.delete');
-            const row = button.closest('tr');
-            const projectId = row ? row.getAttribute('data-project-id') : null;
+            const button = e.target.closest('.edit-skill');
+            const skillId = button.getAttribute('data-id');
             
-            if (projectId) {
-                console.log('Delete button clicked via event delegation, Project ID:', projectId);
-                deleteProjectById(projectId);
-            } else {
-                console.error('Could not find project ID for delete button');
-                showToast('Could not find project ID', 'error');
+            if (skillId) {
+                console.log('Edit skill clicked, ID:', skillId);
+                editSkill(skillId);
+            }
+            
+            return false;
+        }
+
+        // Handle achievement edit buttons
+        if (e.target.closest('.edit-achievement')) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const button = e.target.closest('.edit-achievement');
+            const achievementId = button.getAttribute('data-id');
+            
+            if (achievementId) {
+                console.log('Edit achievement clicked, ID:', achievementId);
+                editAchievement(achievementId);
             }
             
             return false;
@@ -945,21 +1019,6 @@ function initializeProjectFunctionality() {
             if (messageId) {
                 console.log('Reply message clicked, ID:', messageId);
                 replyToMessage(messageId);
-            }
-            
-            return false;
-        }
-
-        if (e.target.closest('.action-btn.delete') && e.target.closest('tr[data-message-id]')) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const button = e.target.closest('.action-btn.delete');
-            const messageId = button.getAttribute('data-id');
-            
-            if (messageId) {
-                console.log('Delete message clicked, ID:', messageId);
-                deleteMessage(messageId);
             }
             
             return false;
@@ -1197,6 +1256,7 @@ function markMessageAsRead(messageId) {
 function deleteMessage(messageId) {
     if (confirm('Are you sure you want to delete this message?')) {
         console.log('Deleting message:', messageId);
+        showToast('Deleting message...', 'info');
         
         $.ajax({
             type: "POST",
@@ -1223,6 +1283,7 @@ function deleteMessage(messageId) {
                 }
             },
             error: function(xhr, status, error) {
+                console.error('AJAX error deleting message:', error, xhr.responseText);
                 showToast('Error deleting message: ' + error, 'error');
             }
         });
@@ -1283,10 +1344,134 @@ function closeMessageModal() {
     }
 }
 
-// Global functions for message actions
-window.viewMessage = viewMessage;
-window.markMessageAsRead = markMessageAsRead;
-window.deleteMessage = deleteMessage;
-window.replyToMessage = replyToMessage;
-window.showMessageModal = showMessageModal;
-window.closeMessageModal = closeMessageModal;
+// Skills delete function
+function deleteSkill(skillId) {
+    if (confirm('Are you sure you want to delete this skill?')) {
+        console.log('Deleting skill:', skillId);
+        showToast('Deleting skill...', 'info');
+        
+        $.ajax({
+            type: "POST",
+            url: "Dashboard.aspx/DeleteSkill",
+            data: JSON.stringify({ id: parseInt(skillId) }),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(response) {
+                try {
+                    const result = JSON.parse(response.d);
+                    if (result.success) {
+                        showToast(result.message, 'success');
+                        // Reload skills to update list
+                        if (typeof loadSkills === 'function') {
+                            setTimeout(() => {
+                                loadSkills();
+                            }, 1000);
+                        }
+                    } else {
+                        showToast(result.message, 'error');
+                    }
+                } catch (e) {
+                    showToast('Error parsing response', 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX error deleting skill:', error, xhr.responseText);
+                showToast('Error deleting skill: ' + error, 'error');
+            }
+        });
+    }
+}
+
+// Achievements delete function
+function deleteAchievement(achievementId) {
+    if (confirm('Are you sure you want to delete this achievement?')) {
+        console.log('Deleting achievement:', achievementId);
+        showToast('Deleting achievement...', 'info');
+        
+        $.ajax({
+            type: "POST",
+            url: "Dashboard.aspx/DeleteAchievement",
+            data: JSON.stringify({ id: parseInt(achievementId) }),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(response) {
+                try {
+                    const result = JSON.parse(response.d);
+                    if (result.success) {
+                        showToast(result.message, 'success');
+                        // Reload achievements to update list
+                        if (typeof loadAchievements === 'function') {
+                            setTimeout(() => {
+                                loadAchievements();
+                            }, 1000);
+                        }
+                    } else {
+                        showToast(result.message, 'error');
+                    }
+                } catch (e) {
+                    showToast('Error parsing response', 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX error deleting achievement:', error, xhr.responseText);
+                showToast('Error deleting achievement: ' + error, 'error');
+            }
+        });
+    }
+}
+
+// Enhanced deleteMessage function
+function deleteMessage(messageId) {
+    if (confirm('Are you sure you want to delete this message?')) {
+        console.log('Deleting message:', messageId);
+        showToast('Deleting message...', 'info');
+        
+        $.ajax({
+            type: "POST",
+            url: "Dashboard.aspx/DeleteMessage",
+            data: JSON.stringify({ messageId: parseInt(messageId) }),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(response) {
+                try {
+                    const result = JSON.parse(response.d);
+                    if (result.success) {
+                        showToast(result.message, 'success');
+                        // Reload messages to update list
+                        if (typeof loadMessages === 'function') {
+                            setTimeout(() => {
+                                loadMessages();
+                            }, 1000);
+                        }
+                    } else {
+                        showToast(result.message, 'error');
+                    }
+                } catch (e) {
+                    showToast('Error parsing response', 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX error deleting message:', error, xhr.responseText);
+                showToast('Error deleting message: ' + error, 'error');
+            }
+        });
+    }
+}
+
+// Edit skill function placeholder
+function editSkill(skillId) {
+    console.log('Edit skill:', skillId);
+    showToast('Edit skill functionality coming soon!', 'info');
+}
+
+// Edit achievement function placeholder  
+function editAchievement(achievementId) {
+    console.log('Edit achievement:', achievementId);
+    showToast('Edit achievement functionality coming soon!', 'info');
+}
+
+// Global functions for skill and achievement actions
+window.deleteSkill = deleteSkill;
+window.deleteAchievement = deleteAchievement;
+window.editSkill = editSkill;
+window.editAchievement = editAchievement;
