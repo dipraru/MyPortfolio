@@ -108,7 +108,17 @@
     <Content Include="About.aspx" />
     <Content Include="App_Start\BundleConfig.cs" />
     <Content Include="App_Start\RouteConfig.cs" />
+    <Content Include="Assets\css\animations.css" />
+    <Content Include="Assets\css\components.css" />
+    <Content Include="Assets\css\header.css" />
+    <Content Include="Assets\css\responsive.css" />
+    <Content Include="Assets\css\sections.css" />
+    <Content Include="Assets\css\variables.css" />
+    <Content Include="Assets\js\animations.js" />
+    <Content Include="Assets\js\theme-ui.js" />
     <Content Include="check_database.aspx" />
+    <Content Include="Components\Footer.ascx" />
+    <Content Include="Components\Header.ascx" />
     <Content Include="Contact.aspx" />
     <Content Include="CreateAllPortfolioTables.sql" />
     <Content Include="CreateAnotherDemoDatabase.sql" />
@@ -150,6 +160,12 @@
     <Content Include="Scripts\WebForms\WebForms.js" />
     <Content Include="Scripts\WebForms\WebParts.js" />
     <Content Include="Scripts\WebForms\WebUIValidation.js" />
+    <Content Include="Sections\AboutSection.ascx" />
+    <Content Include="Sections\AchievementsSection.ascx" />
+    <Content Include="Sections\ContactSection.ascx" />
+    <Content Include="Sections\HeroSection.ascx" />
+    <Content Include="Sections\ProjectsSection.ascx" />
+    <Content Include="Sections\SkillsSection.ascx" />
     <Content Include="setup_database.aspx" />
     <Content Include="setup_messages.aspx" />
     <Content Include="setup_projects.aspx" />
@@ -259,6 +275,14 @@
     <Compile Include="check_database.aspx.designer.cs">
       <DependentUpon>check_database.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Components\Footer.ascx.cs">
+      <DependentUpon>Footer.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Components\Header.ascx.cs">
+      <DependentUpon>Header.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Contact.aspx.cs">
       <DependentUpon>Contact.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -304,6 +328,30 @@
     <Compile Include="Helpers\ProjectsHelper.cs" />
     <Compile Include="Helpers\SkillsHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sections\AboutSection.ascx.cs">
+      <DependentUpon>AboutSection.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Sections\AchievementsSection.ascx.cs">
+      <DependentUpon>AchievementsSection.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Sections\ContactSection.ascx.cs">
+      <DependentUpon>ContactSection.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Sections\HeroSection.ascx.cs">
+      <DependentUpon>HeroSection.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Sections\ProjectsSection.ascx.cs">
+      <DependentUpon>ProjectsSection.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Sections\SkillsSection.ascx.cs">
+      <DependentUpon>SkillsSection.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="setup_database.aspx.cs">
       <DependentUpon>setup_database.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -359,6 +407,7 @@
     <Content Include="SQLEXPRESS_AUTH_GUIDE.md" />
     <Content Include="SKILLS_PERCENTAGE_UPDATE.md" />
     <Content Include="SKILLS_ACHIEVEMENTS_ADD_FUNCTIONALITY.md" />
+    <Content Include="README_MODULAR_STRUCTURE.md" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
