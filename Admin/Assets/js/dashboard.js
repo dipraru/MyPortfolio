@@ -287,6 +287,9 @@ function initializeProjectFunctionality() {
     const addProjectBtn = document.getElementById('addProjectBtn');
     const addProjectPageBtn = document.getElementById('addProjectPageBtn');
 
+    // Flag to prevent duplicate submissions
+    let isSubmitting = false;
+
     // Project modal functions
     function openProjectModal(isEdit = false, projectId = null) {
         console.log('Opening modern project modal. Edit:', isEdit, 'Project ID:', projectId);
@@ -297,6 +300,7 @@ function initializeProjectFunctionality() {
         }
         
         currentProjectId = projectId;
+        isSubmitting = false; // Reset submission flag
         
         // Use modern modal classes
         projectModal.classList.add('active');
@@ -437,6 +441,7 @@ function initializeProjectFunctionality() {
             projectModal.classList.remove('active');
             document.body.classList.remove('modal-open');
             currentProjectId = null;
+            isSubmitting = false; // Reset submission flag
             
             // Reset form after animation
             setTimeout(() => {
@@ -448,6 +453,12 @@ function initializeProjectFunctionality() {
     function saveProject() {
         console.log('Saving modern project...');
         
+        // Prevent duplicate submissions
+        if (isSubmitting) {
+            console.log('Already submitting, ignoring duplicate save request');
+            return;
+        }
+        
         const title = document.getElementById('projectTitle')?.value?.trim();
         const description = document.getElementById('projectDescription')?.value?.trim();
         
@@ -455,6 +466,9 @@ function initializeProjectFunctionality() {
         if (!validateProjectForm()) {
             return;
         }
+
+        // Set submission flag to prevent duplicates
+        isSubmitting = true;
 
         const saveBtn = document.getElementById('saveProjectBtn');
         const btnContent = saveBtn?.querySelector('.btn-content');
@@ -553,6 +567,9 @@ function initializeProjectFunctionality() {
         if (saveBtn) saveBtn.disabled = false;
         if (btnContent) btnContent.style.display = 'flex';
         if (btnLoading) btnLoading.style.display = 'none';
+        
+        // Reset submission flag
+        isSubmitting = false;
     }
 
     function addProject(title, description, imageUrl, tags, githubUrl, liveUrl) {
@@ -761,70 +778,85 @@ function initializeProjectFunctionality() {
     window.loadProjectData = loadProjectData;
     window.closeProjectModalHandler = closeProjectModal;
 
-    // Event Listeners for modal - use modern event handling
+    // Event Listeners for modal - use modern event handling with duplicate prevention
     if (addProjectBtn) {
-        addProjectBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            openProjectModal(false);
-        });
+        addProjectBtn.removeEventListener('click', handleAddProject); // Remove existing if any
+        addProjectBtn.addEventListener('click', handleAddProject);
     }
 
     if (addProjectPageBtn) {
-        addProjectPageBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            openProjectModal(false);
-        });
+        addProjectPageBtn.removeEventListener('click', handleAddProject); // Remove existing if any
+        addProjectPageBtn.addEventListener('click', handleAddProject);
+    }
+
+    function handleAddProject(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        openProjectModal(false);
     }
 
     // Add event listener for reorder button
     const reorderProjectsBtn = document.getElementById('reorderProjectsBtn');
     if (reorderProjectsBtn) {
-        reorderProjectsBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            reorderProjects();
-        });
+        reorderProjectsBtn.removeEventListener('click', handleReorderProjects); // Remove existing if any
+        reorderProjectsBtn.addEventListener('click', handleReorderProjects);
     }
 
-    // Modern modal event handling
+    function handleReorderProjects(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        reorderProjects();
+    }
+
+    // Modern modal event handling with duplicate prevention
     if (closeProjectModalBtn) {
-        closeProjectModalBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            closeProjectModal();
-        });
+        closeProjectModalBtn.removeEventListener('click', handleCloseModal); // Remove existing if any
+        closeProjectModalBtn.addEventListener('click', handleCloseModal);
     }
 
     if (cancelProjectBtn) {
-        cancelProjectBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            closeProjectModal();
-        });
+        cancelProjectBtn.removeEventListener('click', handleCloseModal); // Remove existing if any
+        cancelProjectBtn.addEventListener('click', handleCloseModal);
+    }
+
+    function handleCloseModal(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        closeProjectModal();
     }
 
     if (saveProjectBtn) {
-        saveProjectBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            saveProject();
-        });
+        saveProjectBtn.removeEventListener('click', handleSaveProject); // Remove existing if any
+        saveProjectBtn.addEventListener('click', handleSaveProject);
+    }
+
+    function handleSaveProject(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        saveProject();
     }
 
     // Close modal when clicking outside or on backdrop
     if (projectModal) {
-        projectModal.addEventListener('click', (e) => {
-            if (e.target === projectModal || e.target.classList.contains('modern-modal-backdrop')) {
-                closeProjectModal();
-            }
-        });
+        projectModal.removeEventListener('click', handleModalBackdropClick); // Remove existing if any
+        projectModal.addEventListener('click', handleModalBackdropClick);
+    }
+
+    function handleModalBackdropClick(e) {
+        if (e.target === projectModal || e.target.classList.contains('modern-modal-backdrop')) {
+            closeProjectModal();
+        }
     }
 
     // ESC key support
-    document.addEventListener('keydown', (e) => {
+    document.removeEventListener('keydown', handleEscapeKey); // Remove existing if any
+    document.addEventListener('keydown', handleEscapeKey);
+
+    function handleEscapeKey(e) {
         if (e.key === 'Escape' && projectModal && projectModal.classList.contains('active')) {
             closeProjectModal();
         }
-    });
+    }
 
     // Alternative event delegation approach for edit/delete buttons
     // This ensures the handlers work even for dynamically generated content
