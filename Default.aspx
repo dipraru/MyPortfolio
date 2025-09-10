@@ -28,72 +28,74 @@
     <link rel="stylesheet" href="Assets/css/responsive.css">
 </head>
 <body>
-    <!-- Custom Cursor -->
-    <div class="cursor"></div>
-    <div class="cursor-follower"></div>
-    
-    <!-- Scroll to Top Button -->
-    <div class="scroll-top" id="scrollTop">
-        <i class="fas fa-arrow-up"></i>
-    </div>
-    
-    <!-- Animated Background -->
-    <div class="bg-animation">
-        <div class="gradient-bg"></div>
-        <div class="particles" id="particles"></div>
+    <form id="form1" runat="server">
+        <!-- Custom Cursor -->
+        <div class="cursor"></div>
+        <div class="cursor-follower"></div>
         
-        <!-- Custom Illustrations -->
-        <div class="illustration code-block">
-            <div style="color: var(--primary);">function solve() {</div>
-            <div style="color: var(--accent); margin-left: 15px;">return optimal;</div>
-            <div style="color: var(--primary);">}</div>
+        <!-- Scroll to Top Button -->
+        <div class="scroll-top" id="scrollTop">
+            <i class="fas fa-arrow-up"></i>
         </div>
         
-        <div class="illustration algorithm-circle"></div>
-        
-        <div class="illustration binary-tree">
-            <svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="75" cy="30" r="15" fill="none" stroke="var(--primary)" stroke-width="2"/>
-                <circle cx="45" cy="70" r="15" fill="none" stroke="var(--primary)" stroke-width="2"/>
-                <circle cx="105" cy="70" r="15" fill="none" stroke="var(--primary)" stroke-width="2"/>
-                <circle cx="30" cy="110" r="15" fill="none" stroke="var(--primary)" stroke-width="2"/>
-                <circle cx="60" cy="110" r="15" fill="none" stroke="var(--primary)" stroke-width="2"/>
-                <circle cx="90" cy="110" r="15" fill="none" stroke="var(--primary)" stroke-width="2"/>
-                <circle cx="120" cy="110" r="15" fill="none" stroke="var(--primary)" stroke-width="2"/>
-                
-                <line x1="75" y1="45" x2="45" y2="55" stroke="var(--primary)" stroke-width="2"/>
-                <line x1="75" y1="45" x2="105" y2="55" stroke="var(--primary)" stroke-width="2"/>
-                <line x1="45" y1="85" x2="30" y2="95" stroke="var(--primary)" stroke-width="2"/>
-                <line x1="45" y1="85" x2="60" y2="95" stroke="var(--primary)" stroke-width="2"/>
-                <line x1="105" y1="85" x2="90" y2="95" stroke="var(--primary)" stroke-width="2"/>
-                <line x1="105" y1="85" x2="120" y2="95" stroke="var(--primary)" stroke-width="2"/>
-            </svg>
+        <!-- Animated Background -->
+        <div class="bg-animation">
+            <div class="gradient-bg"></div>
+            <div class="particles" id="particles"></div>
+            
+            <!-- Custom Illustrations -->
+            <div class="illustration code-block">
+                <div style="color: var(--primary);">function solve() {</div>
+                <div style="color: var(--accent); margin-left: 15px;">return optimal;</div>
+                <div style="color: var(--primary);">}</div>
+            </div>
+            
+            <div class="illustration algorithm-circle"></div>
+            
+            <div class="illustration binary-tree">
+                <svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="75" cy="30" r="15" fill="none" stroke="var(--primary)" stroke-width="2"/>
+                    <circle cx="45" cy="70" r="15" fill="none" stroke="var(--primary)" stroke-width="2"/>
+                    <circle cx="105" cy="70" r="15" fill="none" stroke="var(--primary)" stroke-width="2"/>
+                    <circle cx="30" cy="110" r="15" fill="none" stroke="var(--primary)" stroke-width="2"/>
+                    <circle cx="60" cy="110" r="15" fill="none" stroke="var(--primary)" stroke-width="2"/>
+                    <circle cx="90" cy="110" r="15" fill="none" stroke="var(--primary)" stroke-width="2"/>
+                    <circle cx="120" cy="110" r="15" fill="none" stroke="var(--primary)" stroke-width="2"/>
+                    
+                    <line x1="75" y1="45" x2="45" y2="55" stroke="var(--primary)" stroke-width="2"/>
+                    <line x1="75" y1="45" x2="105" y2="55" stroke="var(--primary)" stroke-width="2"/>
+                    <line x1="45" y1="85" x2="30" y2="95" stroke="var(--primary)" stroke-width="2"/>
+                    <line x1="45" y1="85" x2="60" y2="95" stroke="var(--primary)" stroke-width="2"/>
+                    <line x1="105" y1="85" x2="90" y2="95" stroke="var(--primary)" stroke-width="2"/>
+                    <line x1="105" y1="85" x2="120" y2="95" stroke="var(--primary)" stroke-width="2"/>
+                </svg>
+            </div>
         </div>
-    </div>
-    
-    <!-- Header Component -->
-    <uc:Header ID="headerControl" runat="server" />
-    
-    <!-- Hero Section Component -->
-    <uc:HeroSection ID="heroSectionControl" runat="server" />
-    
-    <!-- About Section Component -->
-    <uc:AboutSection ID="aboutSectionControl" runat="server" />
-    
-    <!-- Skills Section Component -->
-    <uc:SkillsSection ID="skillsSectionControl" runat="server" />
-    
-    <!-- Projects Section Component -->
-    <uc:ProjectsSection ID="projectsSectionControl" runat="server" />
-    
-    <!-- Achievements Section Component -->
-    <uc:AchievementsSection ID="achievementsSectionControl" runat="server" />
-    
-    <!-- Contact Section Component -->
-    <uc:ContactSection ID="contactSectionControl" runat="server" />
-    
-    <!-- Footer Component -->
-    <uc:Footer ID="footerControl" runat="server" />
+        
+        <!-- Header Component -->
+        <uc:Header ID="headerControl" runat="server" />
+        
+        <!-- Hero Section Component -->
+        <uc:HeroSection ID="heroSectionControl" runat="server" />
+        
+        <!-- About Section Component -->
+        <uc:AboutSection ID="aboutSectionControl" runat="server" />
+        
+        <!-- Skills Section Component -->
+        <uc:SkillsSection ID="skillsSectionControl" runat="server" />
+        
+        <!-- Projects Section Component -->
+        <uc:ProjectsSection ID="projectsSectionControl" runat="server" />
+        
+        <!-- Achievements Section Component -->
+        <uc:AchievementsSection ID="achievementsSectionControl" runat="server" />
+        
+        <!-- Contact Section Component -->
+        <uc:ContactSection ID="contactSectionControl" runat="server" />
+        
+        <!-- Footer Component -->
+        <uc:Footer ID="footerControl" runat="server" />
+    </form>
     
     <!-- JavaScript Files -->
     <script src="Assets/js/theme-ui.js"></script>

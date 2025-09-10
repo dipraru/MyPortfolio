@@ -30,19 +30,30 @@ namespace MyPortfolio.Helpers
     {
         private static string GetConnectionString()
         {
-            var connString = ConfigurationManager.ConnectionStrings["AnotherDemoConnection"];
-            if (connString != null)
+            try
             {
-                return connString.ConnectionString;
-            }
+                var connString = ConfigurationManager.ConnectionStrings["AnotherDemoConnection"];
+                if (connString != null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Using AnotherDemoConnection: {connString.ConnectionString}");
+                    return connString.ConnectionString;
+                }
 
-            var fallbackConnString = ConfigurationManager.ConnectionStrings["MyDBConnection"];
-            if (fallbackConnString != null)
+                var fallbackConnString = ConfigurationManager.ConnectionStrings["MyDBConnection"];
+                if (fallbackConnString != null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Using MyDBConnection: {fallbackConnString.ConnectionString}");
+                    return fallbackConnString.ConnectionString;
+                }
+
+                System.Diagnostics.Debug.WriteLine("No connection string found!");
+                throw new Exception("No database connection string found for messages.");
+            }
+            catch (Exception ex)
             {
-                return fallbackConnString.ConnectionString;
+                System.Diagnostics.Debug.WriteLine($"Error getting connection string: {ex.Message}");
+                throw;
             }
-
-            throw new Exception("No database connection string found for messages.");
         }
 
         public static List<Message> GetAllMessages()
@@ -213,6 +224,7 @@ namespace MyPortfolio.Helpers
                     using (var cmd = new SqlCommand(query, conn))
                     {
                         int tableCount = Convert.ToInt32(cmd.ExecuteScalar());
+                        System.Diagnostics.Debug.WriteLine($"Messages table exists: {tableCount > 0}");
                         return tableCount > 0;
                     }
                 }
@@ -418,13 +430,23 @@ namespace MyPortfolio.Helpers
             }
         }
 
+        /// <summary>
+        /// Adds a new message to the database
+        /// </summary>
+        /// <param name="message">Message object to add</param>
+        /// <returns>True if successful, false if failed</returns>
         public static bool AddMessage(Message message)
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine("Starting AddMessage method");
+                System.Diagnostics.Debug.WriteLine($"Message details: Name={message.Name}, Email={message.Email}, Subject={message.Subject}");
+                
                 using (var conn = new SqlConnection(GetConnectionString()))
                 {
+                    System.Diagnostics.Debug.WriteLine("Opening database connection");
                     conn.Open();
+                    System.Diagnostics.Debug.WriteLine("Database connection opened successfully");
                     
                     string query = @"
                         INSERT INTO Messages (Name, Email, Subject, Message, Priority, IsRead, IsReplied, IsArchived, 
@@ -434,10 +456,10 @@ namespace MyPortfolio.Helpers
 
                     using (var cmd = new SqlCommand(query, conn))
                     {
-                        cmd.Parameters.AddWithValue("@Name", message.Name);
-                        cmd.Parameters.AddWithValue("@Email", message.Email);
-                        cmd.Parameters.AddWithValue("@Subject", message.Subject);
-                        cmd.Parameters.AddWithValue("@Message", message.MessageText);
+                        cmd.Parameters.AddWithValue("@Name", message.Name ?? "");
+                        cmd.Parameters.AddWithValue("@Email", message.Email ?? "");
+                        cmd.Parameters.AddWithValue("@Subject", message.Subject ?? "");
+                        cmd.Parameters.AddWithValue("@Message", message.MessageText ?? "");
                         cmd.Parameters.AddWithValue("@Priority", message.Priority ?? "Normal");
                         cmd.Parameters.AddWithValue("@IsRead", message.IsRead);
                         cmd.Parameters.AddWithValue("@IsReplied", message.IsReplied);
@@ -447,14 +469,20 @@ namespace MyPortfolio.Helpers
                         cmd.Parameters.AddWithValue("@DateReceived", message.DateReceived);
                         cmd.Parameters.AddWithValue("@AdminNotes", message.AdminNotes ?? (object)DBNull.Value);
 
+                        System.Diagnostics.Debug.WriteLine("Executing SQL command");
                         int rowsAffected = cmd.ExecuteNonQuery();
-                        return rowsAffected > 0;
+                        System.Diagnostics.Debug.WriteLine($"Rows affected: {rowsAffected}");
+                        
+                        bool success = rowsAffected > 0;
+                        System.Diagnostics.Debug.WriteLine($"AddMessage result: {success}");
+                        return success;
                     }
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error adding message: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
                 return false;
             }
         }

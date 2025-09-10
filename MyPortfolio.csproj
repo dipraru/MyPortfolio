@@ -340,6 +340,9 @@
       <DependentUpon>ContactSection.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Sections\ContactSection.ascx.designer.cs">
+      <DependentUpon>ContactSection.ascx</DependentUpon>
+    </Compile>
     <Compile Include="Sections\HeroSection.ascx.cs">
       <DependentUpon>HeroSection.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
