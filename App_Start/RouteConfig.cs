@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Routing;
-using Microsoft.AspNet.FriendlyUrls;
 
 namespace MyPortfolio
 {
@@ -10,9 +9,8 @@ namespace MyPortfolio
     {
         public static void RegisterRoutes(RouteCollection routes)
         {
-            var settings = new FriendlyUrlSettings();
-            settings.AutoRedirectMode = RedirectMode.Permanent;
-            routes.EnableFriendlyUrls(settings);
+            // For now, we'll use direct .aspx URLs
+            // Later we can add custom routing if needed
         }
     }
 }
