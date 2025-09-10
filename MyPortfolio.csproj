@@ -340,9 +340,6 @@
       <DependentUpon>ContactSection.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Sections\ContactSection.ascx.designer.cs">
-      <DependentUpon>ContactSection.ascx</DependentUpon>
-    </Compile>
     <Compile Include="Sections\HeroSection.ascx.cs">
       <DependentUpon>HeroSection.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -351,9 +348,15 @@
       <DependentUpon>ProjectsSection.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Sections\ProjectsSection.ascx.designer.cs">
+      <DependentUpon>ProjectsSection.ascx</DependentUpon>
+    </Compile>
     <Compile Include="Sections\SkillsSection.ascx.cs">
       <DependentUpon>SkillsSection.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Sections\SkillsSection.ascx.designer.cs">
+      <DependentUpon>SkillsSection.ascx</DependentUpon>
     </Compile>
     <Compile Include="setup_database.aspx.cs">
       <DependentUpon>setup_database.aspx</DependentUpon>

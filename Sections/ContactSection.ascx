@@ -36,45 +36,199 @@
         </div>
         <div class="contact-form">
             <div class="form-group">
-                <asp:TextBox ID="txtName" runat="server" placeholder="Your Name" CssClass="form-control" required="required"></asp:TextBox>
-                <asp:RequiredFieldValidator ID="rfvName" runat="server" ControlToValidate="txtName" 
-                    ErrorMessage="Name is required" Display="Dynamic" CssClass="validation-error" 
-                    ValidationGroup="ContactForm"></asp:RequiredFieldValidator>
+                <input type="text" id="txtName" placeholder="Your Name" class="form-control" required>
+                <div class="validation-error" id="nameError" style="display: none;"></div>
             </div>
             <div class="form-group">
-                <asp:TextBox ID="txtEmail" runat="server" TextMode="Email" placeholder="Your Email" CssClass="form-control" required="required"></asp:TextBox>
-                <asp:RequiredFieldValidator ID="rfvEmail" runat="server" ControlToValidate="txtEmail" 
-                    ErrorMessage="Email is required" Display="Dynamic" CssClass="validation-error" 
-                    ValidationGroup="ContactForm"></asp:RequiredFieldValidator>
-                <asp:RegularExpressionValidator ID="revEmail" runat="server" ControlToValidate="txtEmail" 
-                    ErrorMessage="Please enter a valid email address" Display="Dynamic" CssClass="validation-error" 
-                    ValidationExpression="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" 
-                    ValidationGroup="ContactForm"></asp:RegularExpressionValidator>
+                <input type="email" id="txtEmail" placeholder="Your Email" class="form-control" required>
+                <div class="validation-error" id="emailError" style="display: none;"></div>
             </div>
             <div class="form-group">
-                <asp:TextBox ID="txtSubject" runat="server" placeholder="Subject" CssClass="form-control"></asp:TextBox>
+                <input type="text" id="txtSubject" placeholder="Subject" class="form-control">
             </div>
             <div class="form-group">
-                <asp:TextBox ID="txtMessage" runat="server" TextMode="MultiLine" placeholder="Your Message" CssClass="form-control" required="required"></asp:TextBox>
-                <asp:RequiredFieldValidator ID="rfvMessage" runat="server" ControlToValidate="txtMessage" 
-                    ErrorMessage="Message is required" Display="Dynamic" CssClass="validation-error" 
-                    ValidationGroup="ContactForm"></asp:RequiredFieldValidator>
+                <textarea id="txtMessage" placeholder="Your Message" class="form-control" rows="6" required></textarea>
+                <div class="validation-error" id="messageError" style="display: none;"></div>
             </div>
-            <asp:Button ID="btnSubmit" runat="server" Text="Send Message" CssClass="btn-submit" 
-                OnClick="btnSubmit_Click" ValidationGroup="ContactForm" />
+            <button type="button" id="btnSubmit" class="btn-submit">
+                <i class="fas fa-paper-plane"></i>
+                <span id="btnText">Send Message</span>
+                <i class="fas fa-spinner fa-spin" id="btnSpinner" style="display: none;"></i>
+            </button>
             
             <!-- Success/Error Messages -->
-            <asp:Panel ID="pnlSuccess" runat="server" Visible="false" CssClass="message-success">
+            <div id="messageSuccess" class="message-success" style="display: none;">
                 <i class="fas fa-check-circle"></i>
                 <span>Message sent successfully! We'll get back to you soon.</span>
-            </asp:Panel>
-            <asp:Panel ID="pnlError" runat="server" Visible="false" CssClass="message-error">
+            </div>
+            <div id="messageError" class="message-error" style="display: none;">
                 <i class="fas fa-exclamation-triangle"></i>
-                <asp:Literal ID="litError" runat="server"></asp:Literal>
-            </asp:Panel>
+                <span id="errorText"></span>
+            </div>
         </div>
     </div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const btnSubmit = document.getElementById('btnSubmit');
+    const btnText = document.getElementById('btnText');
+    const btnSpinner = document.getElementById('btnSpinner');
+    const messageSuccess = document.getElementById('messageSuccess');
+    const messageError = document.getElementById('messageError');
+    const errorText = document.getElementById('errorText');
+    
+    // Form fields
+    const txtName = document.getElementById('txtName');
+    const txtEmail = document.getElementById('txtEmail');
+    const txtSubject = document.getElementById('txtSubject');
+    const txtMessage = document.getElementById('txtMessage');
+    
+    // Error elements
+    const nameError = document.getElementById('nameError');
+    const emailError = document.getElementById('emailError');
+    const messageErrorField = document.getElementById('messageError');
+
+    btnSubmit.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Hide previous messages
+        hideAllMessages();
+        
+        // Validate form
+        if (!validateForm()) {
+            return;
+        }
+        
+        // Show loading state
+        setLoadingState(true);
+        
+        // Prepare form data
+        const formData = {
+            name: txtName.value.trim(),
+            email: txtEmail.value.trim(),
+            subject: txtSubject.value.trim() || 'Contact Form Submission',
+            message: txtMessage.value.trim()
+        };
+        
+        // Send AJAX request
+        fetch('/Default.aspx/SendContactMessage', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            setLoadingState(false);
+            
+            const result = JSON.parse(data.d);
+            
+            if (result.success) {
+                showSuccess();
+                clearForm();
+            } else {
+                showError(result.message || 'Failed to send message. Please try again.');
+            }
+        })
+        .catch(error => {
+            setLoadingState(false);
+            console.error('Error:', error);
+            showError('An error occurred while sending your message. Please try again.');
+        });
+    });
+    
+    function validateForm() {
+        let isValid = true;
+        
+        // Reset previous errors
+        hideFieldErrors();
+        
+        // Validate name
+        if (!txtName.value.trim()) {
+            showFieldError(nameError, 'Name is required');
+            isValid = false;
+        }
+        
+        // Validate email
+        if (!txtEmail.value.trim()) {
+            showFieldError(emailError, 'Email is required');
+            isValid = false;
+        } else if (!isValidEmail(txtEmail.value.trim())) {
+            showFieldError(emailError, 'Please enter a valid email address');
+            isValid = false;
+        }
+        
+        // Validate message
+        if (!txtMessage.value.trim()) {
+            showFieldError(messageErrorField, 'Message is required');
+            isValid = false;
+        }
+        
+        return isValid;
+    }
+    
+    function isValidEmail(email) {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return emailRegex.test(email);
+    }
+    
+    function setLoadingState(loading) {
+        if (loading) {
+            btnText.style.display = 'none';
+            btnSpinner.style.display = 'inline-block';
+            btnSubmit.disabled = true;
+            btnSubmit.style.opacity = '0.7';
+        } else {
+            btnText.style.display = 'inline-block';
+            btnSpinner.style.display = 'none';
+            btnSubmit.disabled = false;
+            btnSubmit.style.opacity = '1';
+        }
+    }
+    
+    function hideAllMessages() {
+        messageSuccess.style.display = 'none';
+        messageError.style.display = 'none';
+        hideFieldErrors();
+    }
+    
+    function hideFieldErrors() {
+        nameError.style.display = 'none';
+        emailError.style.display = 'none';
+        messageErrorField.style.display = 'none';
+    }
+    
+    function showFieldError(element, message) {
+        element.textContent = message;
+        element.style.display = 'block';
+    }
+    
+    function showSuccess() {
+        messageSuccess.style.display = 'flex';
+        messageSuccess.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    
+    function showError(message) {
+        errorText.textContent = message;
+        messageError.style.display = 'flex';
+        messageError.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    
+    function clearForm() {
+        txtName.value = '';
+        txtEmail.value = '';
+        txtSubject.value = '';
+        txtMessage.value = '';
+    }
+});
+</script>
 
 <style>
 /* Additional styles for form validation and messages */
@@ -101,7 +255,7 @@
     box-shadow: 0 0 15px rgba(0, 217, 255, 0.2);
 }
 
-.form-control[textmode="MultiLine"] {
+.form-control[rows] {
     resize: vertical;
     min-height: 150px;
 }
@@ -121,6 +275,18 @@
     align-items: center;
     gap: 10px;
     font-weight: 500;
+    animation: slideInFromBottom 0.5s ease-out;
+}
+
+@keyframes slideInFromBottom {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .message-success {
@@ -158,17 +324,23 @@
     position: relative;
 }
 
-.btn-submit:hover {
+.btn-submit:hover:not(:disabled) {
     transform: translateY(-5px);
     box-shadow: 0 8px 25px rgba(0, 217, 255, 0.4);
     color: white !important;
 }
 
-.btn-submit::before {
-    content: '\f1d8';
-    font-family: 'Font Awesome 5 Free';
-    font-weight: 900;
-    margin-right: 8px;
-    font-size: 0.9rem;
+.btn-submit:disabled {
+    cursor: not-allowed;
+}
+
+/* Smooth scroll behavior for the entire page */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Ensure contact section is properly positioned for scroll targeting */
+#contact {
+    scroll-margin-top: 80px; /* Account for fixed header height */
 }
 </style>
