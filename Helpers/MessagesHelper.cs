@@ -223,5 +223,240 @@ namespace MyPortfolio.Helpers
                 return false;
             }
         }
+
+        public static Message GetMessageById(int id)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(GetConnectionString()))
+                {
+                    conn.Open();
+                    
+                    string query = @"
+                        SELECT Id, Name, Email, Subject, Message, IsRead, IsReplied, IsArchived, 
+                               Priority, IpAddress, UserAgent, DateReceived, DateRead, DateReplied, 
+                               ReplyMessage, AdminNotes
+                        FROM Messages 
+                        WHERE Id = @Id";
+
+                    using (var cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", id);
+                        
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                return new Message
+                                {
+                                    Id = Convert.ToInt32(reader["Id"]),
+                                    Name = reader["Name"].ToString(),
+                                    Email = reader["Email"].ToString(),
+                                    Subject = reader["Subject"].ToString(),
+                                    MessageText = reader["Message"].ToString(),
+                                    IsRead = Convert.ToBoolean(reader["IsRead"]),
+                                    IsReplied = Convert.ToBoolean(reader["IsReplied"]),
+                                    IsArchived = Convert.ToBoolean(reader["IsArchived"]),
+                                    Priority = reader["Priority"]?.ToString() ?? "Normal",
+                                    IpAddress = reader["IpAddress"]?.ToString(),
+                                    UserAgent = reader["UserAgent"]?.ToString(),
+                                    DateReceived = Convert.ToDateTime(reader["DateReceived"]),
+                                    DateRead = reader["DateRead"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["DateRead"]),
+                                    DateReplied = reader["DateReplied"] == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(reader["DateReplied"]),
+                                    ReplyMessage = reader["ReplyMessage"]?.ToString(),
+                                    AdminNotes = reader["AdminNotes"]?.ToString()
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error getting message by ID: {ex.Message}");
+                throw;
+            }
+
+            return null;
+        }
+
+        public static bool MarkAsRead(int messageId)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(GetConnectionString()))
+                {
+                    conn.Open();
+                    
+                    string query = @"
+                        UPDATE Messages 
+                        SET IsRead = 1, DateRead = GETDATE() 
+                        WHERE Id = @Id";
+
+                    using (var cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", messageId);
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error marking message as read: {ex.Message}");
+                return false;
+            }
+        }
+
+        public static bool MarkAsUnread(int messageId)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(GetConnectionString()))
+                {
+                    conn.Open();
+                    
+                    string query = @"
+                        UPDATE Messages 
+                        SET IsRead = 0, DateRead = NULL 
+                        WHERE Id = @Id";
+
+                    using (var cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", messageId);
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error marking message as unread: {ex.Message}");
+                return false;
+            }
+        }
+
+        public static bool DeleteMessage(int messageId)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(GetConnectionString()))
+                {
+                    conn.Open();
+                    
+                    // Soft delete by marking as archived
+                    string query = @"
+                        UPDATE Messages 
+                        SET IsArchived = 1 
+                        WHERE Id = @Id";
+
+                    using (var cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", messageId);
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error deleting message: {ex.Message}");
+                return false;
+            }
+        }
+
+        public static bool PermanentlyDeleteMessage(int messageId)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(GetConnectionString()))
+                {
+                    conn.Open();
+                    
+                    string query = "DELETE FROM Messages WHERE Id = @Id";
+
+                    using (var cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", messageId);
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error permanently deleting message: {ex.Message}");
+                return false;
+            }
+        }
+
+        public static bool ArchiveMessage(int messageId)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(GetConnectionString()))
+                {
+                    conn.Open();
+                    
+                    string query = @"
+                        UPDATE Messages 
+                        SET IsArchived = 1 
+                        WHERE Id = @Id";
+
+                    using (var cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", messageId);
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error archiving message: {ex.Message}");
+                return false;
+            }
+        }
+
+        public static bool AddMessage(Message message)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(GetConnectionString()))
+                {
+                    conn.Open();
+                    
+                    string query = @"
+                        INSERT INTO Messages (Name, Email, Subject, Message, Priority, IsRead, IsReplied, IsArchived, 
+                                            IpAddress, UserAgent, DateReceived, AdminNotes)
+                        VALUES (@Name, @Email, @Subject, @Message, @Priority, @IsRead, @IsReplied, @IsArchived, 
+                                @IpAddress, @UserAgent, @DateReceived, @AdminNotes)";
+
+                    using (var cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Name", message.Name);
+                        cmd.Parameters.AddWithValue("@Email", message.Email);
+                        cmd.Parameters.AddWithValue("@Subject", message.Subject);
+                        cmd.Parameters.AddWithValue("@Message", message.MessageText);
+                        cmd.Parameters.AddWithValue("@Priority", message.Priority ?? "Normal");
+                        cmd.Parameters.AddWithValue("@IsRead", message.IsRead);
+                        cmd.Parameters.AddWithValue("@IsReplied", message.IsReplied);
+                        cmd.Parameters.AddWithValue("@IsArchived", message.IsArchived);
+                        cmd.Parameters.AddWithValue("@IpAddress", message.IpAddress ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@UserAgent", message.UserAgent ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@DateReceived", message.DateReceived);
+                        cmd.Parameters.AddWithValue("@AdminNotes", message.AdminNotes ?? (object)DBNull.Value);
+
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error adding message: {ex.Message}");
+                return false;
+            }
+        }
     }
 }

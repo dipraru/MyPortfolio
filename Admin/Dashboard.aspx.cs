@@ -527,6 +527,233 @@ namespace MyPortfolio.Admin
             }
         }
 
+        // AJAX Methods for Messages operations
+        [System.Web.Services.WebMethod]
+        public static string TestMessagesConnection()
+        {
+            try
+            {
+                // Test the messages helper connection
+                var messages = MessagesHelper.GetAllMessages();
+                return "{\"success\": true, \"message\": \"Messages database connection successful!\"}";
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = ex.Message;
+                
+                // Check if it's a table not found error
+                if (errorMessage.Contains("Invalid object name 'Messages'") || 
+                    errorMessage.Contains("Table 'Messages' doesn't exist"))
+                {
+                    return "{\"success\": false, \"message\": \"Messages table not found. Please create the Messages table first using the setup script.\"}";
+                }
+                
+                return $"{{\"success\": false, \"message\": \"Database connection error: {EscapeJsonString(errorMessage)}\"}}";
+            }
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string GetAllMessagesData()
+        {
+            try
+            {
+                var messages = MessagesHelper.GetAllMessages();
+                
+                string messagesHtml = "";
+                foreach (var message in messages)
+                {
+                    string encodedName = System.Web.HttpUtility.HtmlEncode(message.Name);
+                    string encodedEmail = System.Web.HttpUtility.HtmlEncode(message.Email);
+                    string encodedSubject = System.Web.HttpUtility.HtmlEncode(message.Subject);
+                    string encodedMessage = System.Web.HttpUtility.HtmlEncode(message.MessageText);
+                    
+                    // Truncate message for display
+                    string truncatedMessage = encodedMessage.Length > 100 
+                        ? encodedMessage.Substring(0, 100) + "..." 
+                        : encodedMessage;
+
+                    // Format date
+                    string formattedDate = message.DateReceived.ToString("MMM dd, yyyy HH:mm");
+                    
+                    // Status display
+                    string statusClass = message.IsRead ? "status-read" : "status-unread";
+                    string statusIcon = message.IsRead ? "fas fa-envelope-open" : "fas fa-envelope";
+                    string statusText = message.IsRead ? "Read" : "Unread";
+                    
+                    // Priority display
+                    string priorityClass = "";
+                    switch (message.Priority?.ToLower())
+                    {
+                        case "high":
+                            priorityClass = "priority-high";
+                            break;
+                        case "low":
+                            priorityClass = "priority-low";
+                            break;
+                        default:
+                            priorityClass = "priority-normal";
+                            break;
+                    }
+
+                    messagesHtml += $@"
+                        <tr data-message-id='{message.Id}' class='{(message.IsRead ? "message-read" : "message-unread")}'>
+                            <td>
+                                <div class='message-sender'>
+                                    <div class='sender-name'>{encodedName}</div>
+                                    <div class='sender-email'>{encodedEmail}</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class='message-subject {priorityClass}'>
+                                    {encodedSubject}
+                                    {(message.Priority?.ToLower() == "high" ? "<span class='priority-indicator'>!</span>" : "")}
+                                </div>
+                            </td>
+                            <td>
+                                <div class='message-preview' title='{encodedMessage}'>
+                                    {truncatedMessage}
+                                </div>
+                            </td>
+                            <td>
+                                <span class='message-status {statusClass}'>
+                                    <i class='{statusIcon}'></i>
+                                    {statusText}
+                                </span>
+                            </td>
+                            <td>
+                                <div class='message-date'>{formattedDate}</div>
+                            </td>
+                            <td>
+                                <div class='actions'>
+                                    <button class='action-btn view-message' title='View Message' data-id='{message.Id}'>
+                                        <i class='fas fa-eye'></i>
+                                    </button>
+                                    {(!message.IsRead ? $"<button class='action-btn mark-read' title='Mark as Read' data-id='{message.Id}'><i class='fas fa-check'></i></button>" : "")}
+                                    <button class='action-btn reply-message' title='Reply' data-id='{message.Id}'>
+                                        <i class='fas fa-reply'></i>
+                                    </button>
+                                    <button class='action-btn delete' title='Delete' data-id='{message.Id}'>
+                                        <i class='fas fa-trash'></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>";
+                }
+
+                if (!messages.Any())
+                {
+                    messagesHtml = @"
+                        <tr>
+                            <td colspan='6' style='text-align: center; padding: 40px;'>
+                                <i class='fas fa-envelope' style='font-size: 3rem; color: var(--text-tertiary); margin-bottom: 15px;'></i>
+                                <div style='color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 10px;'>No messages found</div>
+                                <div style='color: var(--text-tertiary); font-size: 0.9rem;'>Messages from your contact form will appear here</div>
+                            </td>
+                        </tr>";
+                }
+
+                string escapedHtml = EscapeJsonString(messagesHtml);
+                return $@"{{
+                    ""success"": true,
+                    ""messagesCount"": {messages.Count},
+                    ""messagesHtml"": ""{escapedHtml}""
+                }}";
+            }
+            catch (Exception ex)
+            {
+                return $"{{\"success\": false, \"message\": \"Error loading messages: {EscapeJsonString(ex.Message)}\"}}";
+            }
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string MarkMessageAsRead(int messageId)
+        {
+            try
+            {
+                bool success = MessagesHelper.MarkAsRead(messageId);
+                if (success)
+                {
+                    return "{\"success\": true, \"message\": \"Message marked as read successfully!\"}";
+                }
+                else
+                {
+                    return "{\"success\": false, \"message\": \"Failed to mark message as read.\"}";
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"{{\"success\": false, \"message\": \"Error marking message as read: {EscapeJsonString(ex.Message)}\"}}";
+            }
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string DeleteMessage(int messageId)
+        {
+            try
+            {
+                bool success = MessagesHelper.DeleteMessage(messageId);
+                if (success)
+                {
+                    return "{\"success\": true, \"message\": \"Message deleted successfully!\"}";
+                }
+                else
+                {
+                    return "{\"success\": false, \"message\": \"Failed to delete message.\"}";
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"{{\"success\": false, \"message\": \"Error deleting message: {EscapeJsonString(ex.Message)}\"}}";
+            }
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string GetMessage(int messageId)
+        {
+            try
+            {
+                var message = MessagesHelper.GetMessageById(messageId);
+                if (message == null)
+                {
+                    return "{\"success\": false, \"message\": \"Message not found.\"}";
+                }
+
+                // Escape strings for JSON
+                string name = EscapeJsonString(message.Name);
+                string email = EscapeJsonString(message.Email);
+                string subject = EscapeJsonString(message.Subject);
+                string messageText = EscapeJsonString(message.MessageText);
+                string priority = EscapeJsonString(message.Priority ?? "Normal");
+                string ipAddress = EscapeJsonString(message.IpAddress ?? "");
+                string userAgent = EscapeJsonString(message.UserAgent ?? "");
+                string adminNotes = EscapeJsonString(message.AdminNotes ?? "");
+
+                return $@"{{
+                    ""success"": true,
+                    ""message"": {{
+                        ""id"": {message.Id},
+                        ""name"": ""{name}"",
+                        ""email"": ""{email}"",
+                        ""subject"": ""{subject}"",
+                        ""messageText"": ""{messageText}"",
+                        ""isRead"": {message.IsRead.ToString().ToLower()},
+                        ""isReplied"": {message.IsReplied.ToString().ToLower()},
+                        ""priority"": ""{priority}"",
+                        ""ipAddress"": ""{ipAddress}"",
+                        ""userAgent"": ""{userAgent}"",
+                        ""dateReceived"": ""{message.DateReceived:yyyy-MM-dd HH:mm:ss}"",
+                        ""dateRead"": ""{(message.DateRead?.ToString("yyyy-MM-dd HH:mm:ss") ?? "")}"",
+                        ""dateReplied"": ""{(message.DateReplied?.ToString("yyyy-MM-dd HH:mm:ss") ?? "")}"",
+                        ""adminNotes"": ""{adminNotes}""
+                    }}
+                }}";
+            }
+            catch (Exception ex)
+            {
+                return $"{{\"success\": false, \"message\": \"Error getting message: {EscapeJsonString(ex.Message)}\"}}";
+            }
+        }
+
         private static string EscapeJsonString(string input)
         {
             if (string.IsNullOrEmpty(input))

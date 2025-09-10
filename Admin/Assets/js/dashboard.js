@@ -230,6 +230,11 @@ function initializeNavigation() {
                             showAchievementsPage();
                         }
                         break;
+                    case 'messages':
+                        if (typeof showMessagesPage === 'function') {
+                            showMessagesPage();
+                        }
+                        break;
                 }
             }
 
@@ -898,6 +903,67 @@ function initializeProjectFunctionality() {
             
             return false;
         }
+
+        // Message action handlers
+        if (e.target.closest('.view-message')) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const button = e.target.closest('.view-message');
+            const messageId = button.getAttribute('data-id');
+            
+            if (messageId) {
+                console.log('View message clicked, ID:', messageId);
+                viewMessage(messageId);
+            }
+            
+            return false;
+        }
+
+        if (e.target.closest('.mark-read')) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const button = e.target.closest('.mark-read');
+            const messageId = button.getAttribute('data-id');
+            
+            if (messageId) {
+                console.log('Mark as read clicked, ID:', messageId);
+                markMessageAsRead(messageId);
+            }
+            
+            return false;
+        }
+
+        if (e.target.closest('.reply-message')) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const button = e.target.closest('.reply-message');
+            const messageId = button.getAttribute('data-id');
+            
+            if (messageId) {
+                console.log('Reply message clicked, ID:', messageId);
+                replyToMessage(messageId);
+            }
+            
+            return false;
+        }
+
+        if (e.target.closest('.action-btn.delete') && e.target.closest('tr[data-message-id]')) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const button = e.target.closest('.action-btn.delete');
+            const messageId = button.getAttribute('data-id');
+            
+            if (messageId) {
+                console.log('Delete message clicked, ID:', messageId);
+                deleteMessage(messageId);
+            }
+            
+            return false;
+        }
     });
 }
 
@@ -1059,3 +1125,168 @@ document.addEventListener('keydown', function(e) {
         }
     }
 });
+
+// Message handling functions
+function viewMessage(messageId) {
+    console.log('Viewing message:', messageId);
+    
+    // Make AJAX call to get message details
+    $.ajax({
+        type: "POST",
+        url: "Dashboard.aspx/GetMessage",
+        data: JSON.stringify({ messageId: parseInt(messageId) }),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function(response) {
+            try {
+                const result = JSON.parse(response.d);
+                if (result.success) {
+                    const message = result.message;
+                    showMessageModal(message);
+                    
+                    // Mark as read if not already read
+                    if (!message.isRead) {
+                        markMessageAsRead(messageId);
+                    }
+                } else {
+                    showToast(result.message, 'error');
+                }
+            } catch (e) {
+                showToast('Error parsing message data', 'error');
+            }
+        },
+        error: function(xhr, status, error) {
+            showToast('Error loading message: ' + error, 'error');
+        }
+    });
+}
+
+function markMessageAsRead(messageId) {
+    console.log('Marking message as read:', messageId);
+    
+    $.ajax({
+        type: "POST",
+        url: "Dashboard.aspx/MarkMessageAsRead",
+        data: JSON.stringify({ messageId: parseInt(messageId) }),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function(response) {
+            try {
+                const result = JSON.parse(response.d);
+                if (result.success) {
+                    showToast(result.message, 'success');
+                    // Reload messages to update status
+                    if (typeof loadMessages === 'function') {
+                        setTimeout(() => {
+                            loadMessages();
+                        }, 1000);
+                    }
+                } else {
+                    showToast(result.message, 'error');
+                }
+            } catch (e) {
+                showToast('Error parsing response', 'error');
+            }
+        },
+        error: function(xhr, status, error) {
+            showToast('Error marking message as read: ' + error, 'error');
+        }
+    });
+}
+
+function deleteMessage(messageId) {
+    if (confirm('Are you sure you want to delete this message?')) {
+        console.log('Deleting message:', messageId);
+        
+        $.ajax({
+            type: "POST",
+            url: "Dashboard.aspx/DeleteMessage",
+            data: JSON.stringify({ messageId: parseInt(messageId) }),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(response) {
+                try {
+                    const result = JSON.parse(response.d);
+                    if (result.success) {
+                        showToast(result.message, 'success');
+                        // Reload messages to update list
+                        if (typeof loadMessages === 'function') {
+                            setTimeout(() => {
+                                loadMessages();
+                            }, 1000);
+                        }
+                    } else {
+                        showToast(result.message, 'error');
+                    }
+                } catch (e) {
+                    showToast('Error parsing response', 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                showToast('Error deleting message: ' + error, 'error');
+            }
+        });
+    }
+}
+
+function replyToMessage(messageId) {
+    console.log('Reply to message:', messageId);
+    // For now, just show a placeholder
+    showToast('Reply functionality coming soon!', 'info');
+}
+
+function showMessageModal(message) {
+    // Create a simple modal to display message details
+    const modalHtml = `
+        <div id="messageModal" class="modal" style="display: block; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+            <div class="modal-content" style="background-color: var(--bg-primary); margin: 5% auto; padding: 20px; border-radius: 10px; width: 80%; max-width: 600px; max-height: 80vh; overflow-y: auto;">
+                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color);">
+                    <h2 style="margin: 0; color: var(--text-primary);">Message Details</h2>
+                    <button onclick="closeMessageModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-secondary);">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="message-info" style="margin-bottom: 20px;">
+                        <div style="margin-bottom: 10px;"><strong>From:</strong> ${message.name} (${message.email})</div>
+                        <div style="margin-bottom: 10px;"><strong>Subject:</strong> ${message.subject}</div>
+                        <div style="margin-bottom: 10px;"><strong>Priority:</strong> ${message.priority}</div>
+                        <div style="margin-bottom: 10px;"><strong>Date:</strong> ${message.dateReceived}</div>
+                        <div style="margin-bottom: 10px;"><strong>Status:</strong> ${message.isRead ? 'Read' : 'Unread'}</div>
+                    </div>
+                    <div class="message-content" style="background: var(--bg-secondary); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <strong>Message:</strong><br>
+                        <div style="margin-top: 10px; white-space: pre-wrap;">${message.messageText}</div>
+                    </div>
+                    ${message.ipAddress ? `<div style="font-size: 0.9rem; color: var(--text-tertiary);"><strong>IP Address:</strong> ${message.ipAddress}</div>` : ''}
+                </div>
+                <div class="modal-footer" style="text-align: right; margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border-color);">
+                    <button onclick="closeMessageModal()" class="btn btn-secondary" style="margin-right: 10px;">Close</button>
+                    ${!message.isRead ? `<button onclick="markMessageAsRead(${message.id}); closeMessageModal();" class="btn btn-primary">Mark as Read</button>` : ''}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing modal if any
+    const existingModal = document.getElementById('messageModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Add modal to body
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function closeMessageModal() {
+    const modal = document.getElementById('messageModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Global functions for message actions
+window.viewMessage = viewMessage;
+window.markMessageAsRead = markMessageAsRead;
+window.deleteMessage = deleteMessage;
+window.replyToMessage = replyToMessage;
+window.showMessageModal = showMessageModal;
+window.closeMessageModal = closeMessageModal;
